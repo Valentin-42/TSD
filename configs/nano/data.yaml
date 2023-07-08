@@ -1,0 +1,7 @@
+train: ../datasets/MTSD_1/images/train
+val: ../datasets/MTSD_1/images/val
+test : ../datasets/MTSD_1/images/test
+
+# class names
+names: 
+  0: 'traffic_sign'

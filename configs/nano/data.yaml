@@ -1,7 +1,7 @@
-path :
-train: /mnt/gpu_storage/traffic-sign-detection/datasets/default_MTSD/train/
-val  : /mnt/gpu_storage/traffic-sign-detection/datasets/default_MTSD/val/
-test : /mnt/gpu_storage/traffic-sign-detection/datasets/default_MTSD/test/
+path : /mnt/gpu_storage/traffic-sign-detection/datasets/
+train: default_MTSD/train/
+val  : default_MTSD/val/
+test : default_MTSD/test/
 
 # class names
 names: 

@@ -23,7 +23,33 @@ def move_image(image_key,folder):
     path = os.path.join('./MTSD/extracted/images/', '{:s}.jpg'.format(image_key))
     shutil.copy(path, folder+"/images/")
 
-if __name__ == '__main__':
+def json_to_COCO_format(json_file_path, single_class=False) :
+
+    # output : <object-class-id> <x> <y> <width> <height>
+    txt_file_path = os.path.splitext(json_file_path)[0] + ".txt"
+    with open(json_file_path, 'r') as json_file:
+        data = json.load(json_file)
+        objects = data['objects']
+
+        with open(txt_file_path, 'w') as text_file:
+            for obj in objects:
+                label = obj['label']
+                if single_class :
+                    label = "0"
+                bbox  = obj['bbox']
+                xmin  = bbox['xmin']
+                ymin  = bbox['ymin']
+                xmax  = bbox['xmax']
+                ymax  = bbox['ymax']
+                
+                width = xmax - xmin
+                height = ymax - ymin
+                
+                line = f"{label} {xmin} {ymin} {width} {height}\n"
+                text_file.write(line)
+
+
+def dataset_creation_based_on_splits_file() :
     print("Creating dataset")
 
     path_to_datasets = "./datasets/"
@@ -60,4 +86,18 @@ if __name__ == '__main__':
 
     print("DONE")
 
+if __name__ == '__main__':
 
+    path_to_datasets = "./datasets/"
+    path_to_ds = path_to_datasets + "default_MTSD/"
+    path_to_train_labels = path_to_ds + "train/labels/"
+    path_to_val_labels   = path_to_ds + "val/labels/"
+    labels_folders = [path_to_train_labels,path_to_val_labels]
+
+    # 1. Create COCO txt labels from json
+    for folder in labels_folders :
+        for json_f in os.listdir(folder) :
+            print(folder+json_f)
+            json_to_COCO_format(json_file_path=folder+json_f,single_class=True)
+
+    

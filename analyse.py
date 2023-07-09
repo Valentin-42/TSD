@@ -23,8 +23,10 @@ def parser(data, objects, images,id) :
     for obj in data["objects"] :
 
         obj_dict = {
-            "Label": obj["label"],
-            "Size": (obj["bbox"]["xmax"] - obj["bbox"]["xmin"]) * (obj["bbox"]["ymax"] - obj["bbox"]["ymin"])
+            "Label" : obj["label"],
+            "Width" : abs(obj["bbox"]["xmax"] - obj["bbox"]["xmin"]),
+            "Height": abs(obj["bbox"]["ymax"] - obj["bbox"]["ymin"]),
+            "Size"  : (obj["bbox"]["xmax"] - obj["bbox"]["xmin"]) * (obj["bbox"]["ymax"] - obj["bbox"]["ymin"])
         }
         objects.append(obj_dict)
     
@@ -56,45 +58,69 @@ if __name__ == '__main__':
     objects = [] #List of dict containing objects properties (Label, Size)
     images  = [] #List of dict containing images properties  (Width, Height)
     # annotations_path = "./MTSD/extracted/mtsd_v2_fully_annotated/annotations/"
-    annotations_path = "./datasets/default_MTSD/train/labels/"
-
+    # annotations_path = "./datasets/default_MTSD/val/labels/"
+    annotations_path = "./datasets/default_MTSD/test/images/"
+    
     N = len(os.listdir(annotations_path))
-    print(f"Number of image in folder :{N}")
-    for id,f in enumerate(os.listdir(annotations_path)) :
-        # load the annotation json
-        path = os.path.join(annotations_path,f)
-        anno = load_annotation(path)
-        parser(anno,objects,images,id)
+    mode=0
+    if mode != 0 :
+        print(f"Folder :{annotations_path}")
+        print(f"Number of image in folder :{N}")
+        for id,f in enumerate(os.listdir(annotations_path)) :
+            # load the annotation json
+            path = os.path.join(annotations_path,f)
+            anno = load_annotation(path)
+            parser(anno,objects,images,id)
 
-        print(f" --> {np.round((id/N)*100,2)} % <--", end="\r")
-        # if id == 1000 :
-        #     break 
+            print(f" --> {np.round((id/N)*100,2)} % <--", end="\r")
+            # if id == 1000 :
+            #     break 
 
-    # Create a pandas DataFrame from lists
-    df_objects = pd.DataFrame(objects)
-    df_images  = pd.DataFrame(images)
+        # Create a pandas DataFrame from lists
+        df_objects = pd.DataFrame(objects)
+        df_images  = pd.DataFrame(images)
 
-    # Print object sizes
-    print("Object Sizes:")
-    print(df_objects[["Label", "Size"]])
+        # Print object sizes
+        print("Object Sizes:")
+        print(df_objects[["Label", "Size"]])
+        df_objects.plot(x='Height', y='Width', kind='scatter', title='Objects Width vs Height') #Plot 
 
-    # Print images sizes
-    print("Images Sizes:")
-    print(df_images[["Id", "Width","Height"]])
+        # Print images sizes
+        print("Images Sizes:")
+        print(df_images[["Id", "Width","Height"]])
+        df_images.plot(x='Height', y='Width', kind='scatter', title='Images Width vs Height') #Plot 
 
-    # Split the 'Size' column into bins, creating a new cutted dataframe
-    bins = [0, 1024, 9216, float('inf')]
-    labels = ['small', 'medium', 'large']
-    df_objects['Size Category'] = pd.cut(df_objects['Size'], bins=bins, labels=labels)
+        # Split the 'Size' column into bins, creating a new cutted dataframe
+        bins = [0, 1024, 9216, float('inf')]
+        labels = ['small', 'medium', 'large']
+        df_objects['Size Category'] = pd.cut(df_objects['Size'], bins=bins, labels=labels)
 
-    # Calculate the size category distribution
-    size_category_distribution = df_objects['Size Category'].value_counts().sort_index()
+        # Calculate the size category distribution
+        size_category_distribution = df_objects['Size Category'].value_counts().sort_index()
 
-    # Calculate class distribution
-    class_distribution = df_objects["Label"].value_counts()
+        # Calculate class distribution
+        class_distribution = df_objects["Label"].value_counts()
+        print(class_distribution)
+        # dashboard(class_distribution)
+        # show_size_distrib(size_category_distribution)
+        # show_class_distrib(class_distribution)
 
-    print(class_distribution)
-    # dashboard(class_distribution)
-    show_size_distrib(size_category_distribution)
-    # show_class_distrib(class_distribution)
+        plt.show()
+
+    else :
+        for id,f in enumerate(os.listdir(annotations_path)) :
+            im_path = os.path.join(annotations_path,f)
+            image = Image.open(im_path) 
+            # Extract the height and width
+            width, height = image.size
+            images.append({"Id":id,"Width":width,"Height":height})
+            print(f" --> {np.round((id/N)*100,2)} % <--", end="\r")
+
+
+        # Print images sizes
+        df_images  = pd.DataFrame(images)
+        print("Images Sizes:")
+        print(df_images[["Id", "Width","Height"]])
+        df_images.plot(x='Height', y='Width', kind='scatter', title='Images Width vs Height')  
+        plt.show()
 

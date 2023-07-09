@@ -19,5 +19,5 @@ if __name__ == "__main__":
 
     # Train the model
     print(">> Starting training <<")
-    print(str(**args))
+    print(str(args))
     results = model.train(**args)

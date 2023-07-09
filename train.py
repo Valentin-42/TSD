@@ -35,6 +35,8 @@ def start_training_scratch() :
     results = model.train(**args)
 
 if __name__ == "__main__":
-    path_to_last_weight = ""
-    additionnal_epochs = 10
-    fine_tunining(path_to_last_weight,additionnal_epochs)
+    start_training_scratch()
+
+    # path_to_last_weight = "./runs/detect/train/weights/last.pt"
+    # additionnal_epochs = 10
+    # fine_tunining(path_to_last_weight,additionnal_epochs)

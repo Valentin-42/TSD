@@ -1,6 +1,6 @@
-train: ../datasets/default_MTSD/images/train/
-val: ../datasets/default_MTSD/images/val/
-test : ../datasets/default_MTSD/images/test/
+train: ../datasets/default_MTSD/train/images
+val: ../datasets/default_MTSD/val/images
+test : ../datasets/default_MTSD/test/images
 
 # class names
 names: 

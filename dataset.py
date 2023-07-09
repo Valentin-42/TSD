@@ -23,12 +23,15 @@ def move_image(image_key,folder):
     path = os.path.join('./MTSD/extracted/images/', '{:s}.jpg'.format(image_key))
     shutil.copy(path, folder+"/images/")
 
+
 def json_to_COCO_format(json_file_path, single_class=False) :
 
     # output : <object-class-id> <x> <y> <width> <height>
     txt_file_path = os.path.splitext(json_file_path)[0] + ".txt"
     with open(json_file_path, 'r') as json_file:
         data = json.load(json_file)
+        w = data['width']
+        h = data['height']
         objects = data['objects']
 
         with open(txt_file_path, 'w') as text_file:
@@ -42,13 +45,13 @@ def json_to_COCO_format(json_file_path, single_class=False) :
                 xmax  = bbox['xmax']
                 ymax  = bbox['ymax']
                 
-                width = xmax - xmin
-                height = ymax - ymin
+                width_n = (xmax - xmin)/w
+                height_n = (ymax - ymin)/h
                 
-                line = f"{label} {xmin} {ymin} {width} {height}\n"
+                line = f"{label} {xmin/w} {ymin/h} {width_n} {height_n}\n"
                 text_file.write(line)
 
-
+        
 def dataset_creation_based_on_splits_file() :
     print("Creating dataset")
 

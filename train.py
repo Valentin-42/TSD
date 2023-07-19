@@ -1,5 +1,17 @@
 from ultralytics import YOLO
 import yaml
+from ray import tune
+
+def RayTune() :
+    data_path = "./configs/nano/data.yaml"
+    model = YOLO("yolov8n.pt")
+    # Run Ray Tune on the model
+    result_grid = model.tune(data=data_path,
+                            space={"lr0":tune.uniform(1e-5, 1e-1)},
+                            epochs=10,
+                            results_dir="results/LR0/"
+                            )
+    
 
 def fine_tunining(path_to_last_weight,additionnal_epochs) :
     model = YOLO(path_to_last_weight)

@@ -1,6 +1,7 @@
 import json
 import os
 import shutil
+import random
 
 def Create_Dataset_Architecture(ds_root,dataset_name) :
     folders    = ["train", "val", "test"]
@@ -22,7 +23,6 @@ def move_annotation(image_key,folder):
 def move_image(image_key,folder):
     path = os.path.join('./MTSD/extracted/images/', '{:s}.jpg'.format(image_key))
     shutil.copy(path, folder+"/images/")
-
 
 def json_to_COCO_format(json_file_path, single_class=False) :
 
@@ -51,7 +51,47 @@ def json_to_COCO_format(json_file_path, single_class=False) :
                 line = f"{label} {xmin/w} {ymin/h} {width_n} {height_n}\n"
                 text_file.write(line)
 
-        
+def normalize_txt():
+    import json
+    # <object-class-id> <x> <y> <width> <height> 
+    train_label_path = "./datasets/light_MTSD/train/labels/"
+    train_image_path = "./datasets/light_MTSD/train/images/"
+
+    for file in os.listdir(train_label_path):
+        print(file)
+        txt_file_path = train_label_path + file
+        im_file_path = train_image_path + os.path.splitext(file)[0] + ".jpg"
+
+        # Open im_file_path and get image width and height 
+        with open(im_file_path, 'rb') as image_file:
+            from PIL import Image
+            image = Image.open(image_file)
+            im_w, im_h = image.size
+
+        with open(txt_file_path, 'r') as txt_file:
+            lines = txt_file.readlines()
+
+        # Process each line and save the modified txt file
+        modified_lines = []
+        for line in lines:
+            line = line.strip().split()
+            if len(line) == 5:
+                if (x<1 or y<1 or width<1 or  height<1) :
+                    continue 
+                object_class_id = line[0]
+                x = float(line[1]) / im_w
+                y = float(line[2]) / im_h
+                width = float(line[3]) / im_w
+                height = float(line[4]) / im_h
+                
+                modified_line = f"{object_class_id} {x} {y} {width} {height}\n"
+                modified_lines.append(modified_line)
+
+        # Save the modified txt file
+        modified_txt_file_path = txt_file_path
+        with open(modified_txt_file_path, 'w') as modified_txt_file:
+            modified_txt_file.writelines(modified_lines)      
+
 def dataset_creation_based_on_splits_file() :
     print("Creating dataset")
 
@@ -89,18 +129,64 @@ def dataset_creation_based_on_splits_file() :
 
     print("DONE")
 
+def create_light_dataset(folder,factor):
+
+    folder_path = "./datasets/default_MTSD/"+folder+'/'
+    im_path = "./datasets/default_MTSD/"+folder+"/images/"
+    an_path = "./datasets/default_MTSD/"+folder+"/labels/"
+
+    out_im_path = "./datasets/light_MTSD/"+folder+"/images/"
+    out_an_path = "./datasets/light_MTSD/"+folder+"/labels/"
+
+    # Get all file names in the folder
+    file_names = os.listdir(im_path)
+
+    # Calculate the number of files to remove
+    num_files_to_extract = len(file_names) // factor
+
+    # Randomly select files
+    selected_files = random.sample(file_names, num_files_to_extract)
+    for i,file_name in enumerate(selected_files):
+        an_file_name = file_name.split(".")[0] + ".txt"
+        image_path    = os.path.join(im_path, file_name)
+        annot_path    = os.path.join(an_path, an_file_name)
+
+        dest_im_path   =  os.path.join(out_im_path, file_name)
+        dest_an_path   =  os.path.join(out_an_path, an_file_name)
+
+        shutil.copy(image_path,dest_im_path)
+        if not folder == "test" :
+            shutil.copy(annot_path,dest_an_path)
+        print(f".. {file_name} .. -> {100*(i/num_files_to_extract)} %")
+
+
 if __name__ == '__main__':
 
     path_to_datasets = "./datasets/"
     path_to_ds = path_to_datasets + "default_MTSD/"
     path_to_train_labels = path_to_ds + "train/labels/"
     path_to_val_labels   = path_to_ds + "val/labels/"
-    labels_folders = [path_to_train_labels,path_to_val_labels]
+    labels_folders = [path_to_val_labels]
 
-    # 1. Create COCO txt labels from json
-    for folder in labels_folders :
-        for json_f in os.listdir(folder) :
-            print(folder+json_f)
-            json_to_COCO_format(json_file_path=folder+json_f,single_class=True)
+    # # 1. Create COCO txt labels from json
+    # for folder in labels_folders :
+    #     for json_f in os.listdir(folder) :
+    #         print(folder+json_f)
+    #         json_to_COCO_format(json_file_path=folder+json_f,single_class=True)
 
-    
+    # Create_Dataset_Architecture(path_to_datasets,"light_MTSD")
+    # create_light_dataset("test",4)
+
+    # normalize_txt()
+
+    train_image_path = "./datasets/light_MTSD/train/images/"
+    train_label_path = "./datasets/light_MTSD/train/labels/"
+
+    # for image in os.listdir(train_image_path) :
+    #     print(image.split('.')[0])
+    #     move_annotation(image.split('.')[0],train_label_path)
+
+
+    # for ann in os.listdir(train_label_path) :
+    #     ann = train_label_path+ann
+    #     json_to_COCO_format(ann, single_class=True)

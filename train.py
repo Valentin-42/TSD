@@ -10,7 +10,8 @@ def fine_tunining(path_to_last_weight,additionnal_epochs) :
         epochs=additionnal_epochs, # number of additional epochs you want to train on
         imgsz=640,
         lr0=0.01,  # initial learning rate (i.e. SGD:1E-2, Adam:1E-3)
-        lrf=0.01
+        lrf=0.01,
+        save_period = 10,
     )
 
 def start_training_scratch() :
@@ -35,8 +36,8 @@ def start_training_scratch() :
     results = model.train(**args)
 
 if __name__ == "__main__":
-    start_training_scratch()
+    # start_training_scratch()
 
-    # path_to_last_weight = "./runs/detect/train/weights/last.pt"
-    # additionnal_epochs = 10
-    # fine_tunining(path_to_last_weight,additionnal_epochs)
+    path_to_last_weight = "./runs/detect/train/weights/last.pt"
+    additionnal_epochs = 100
+    fine_tunining(path_to_last_weight,additionnal_epochs)

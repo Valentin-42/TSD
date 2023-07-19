@@ -3,7 +3,7 @@ import yaml
 from ray import tune
 
 def RayTune() :
-    data_path = "./configs/nano/data.yaml"
+    data_path = "/mnt/gpu_storage/traffic-sign-detection/TSD/configs/nano/data.yaml"
     model = YOLO("yolov8n.pt")
     # Run Ray Tune on the model
     result_grid = model.tune(data=data_path,

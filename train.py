@@ -7,7 +7,7 @@ def fine_tunining(path_to_last_weight,additionnal_epochs) :
 
     # train the model
     results = model.train(
-        resume=True
+        resume=True,
         epochs=additionnal_epochs, # number of additional epochs you want to train on
         imgsz=640,
         lr0=0.01,  # initial learning rate (i.e. SGD:1E-2, Adam:1E-3)

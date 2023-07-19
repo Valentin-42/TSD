@@ -9,7 +9,6 @@ def RayTune() :
     result_grid = model.tune(data=data_path,
                             space={"lr0":tune.uniform(1e-5, 1e-1)},
                             epochs=10,
-                            results_dir="results/LR0/"
                             )
     
 

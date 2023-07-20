@@ -1,7 +1,7 @@
 model : ./configs/nano/yolov8n.pt  # path to model file, i.e. yolov8n.pt, yolov8n.yaml
 # model : ./runs/detect/train/weights/last.pt
 data  : ./configs/nano/data.yaml  # path to data file, i.e. coco128.yaml
-save_dir : "/runs/detect/augmented/"
+project : "/runs/detect/augmented/"
 
 # Basic params
 epochs : 100  # number of epochs to train for

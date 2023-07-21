@@ -33,7 +33,8 @@ if __name__ == "__main__":
         }
     
     model = YOLO("yolov8n.pt")
-    data_path="./configs/nano/data.yaml"
+    data_path="/mnt/gpu_storage/traffic-sign-detection/TSD/configs/nano/data.yaml"
+
     ray.shutdown()
     ray.init()
 

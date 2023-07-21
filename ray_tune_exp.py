@@ -12,7 +12,6 @@ if __name__ == "__main__":
             "copy_paste": tune.choice([0.3,0.8]),
             "scale": tune.choice([0.3, 0.8]),
             "mosaic": tune.choice([0.3, 0.8]),
-            "imgsz": tune.choice([640, 800]),
         }
     
     model = YOLO("yolov8n.pt")
@@ -25,6 +24,7 @@ if __name__ == "__main__":
     result_grid = model.tune(data=data_path,
                             space=param_space,
                             gpu_per_trial=1,
+                            max_samples= 5,
                             epochs=50)
     
     print("   >>>>>    ")

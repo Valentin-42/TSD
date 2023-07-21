@@ -34,6 +34,8 @@ if __name__ == "__main__":
     
     model = YOLO("yolov8n.pt")
     data_path="./configs/nano/data.yaml"
+    ray.shutdown()
+    ray.init()
 
     # Run Ray Tune on the model
     result_grid = model.tune(data=data_path,
@@ -47,3 +49,5 @@ if __name__ == "__main__":
     txt_file_path = "results.txt"
     with open(txt_file_path, 'w') as text_file:
         text_file.write(result_grid)
+
+    ray.shutdown()

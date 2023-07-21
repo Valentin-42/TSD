@@ -12,7 +12,7 @@ if __name__ == "__main__":
             "copy_paste": tune.choice([0.3,0.8]),
             "scale": tune.choice([0.3, 0.8]),
             "mosaic": tune.choice([0.3, 0.8]),
-            "imgsz": tune.choice([608, 800]),
+            "imgsz": tune.choice([640, 800]),
         }
     
     model = YOLO("yolov8n.pt")

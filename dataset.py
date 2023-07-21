@@ -170,13 +170,15 @@ def create_light_dataset(folder,factor):
         print(f".. {file_name} .. -> {100*(i/num_files_to_extract)} %")
 
 
+
+
 if __name__ == '__main__':
 
     path_to_datasets = "./datasets/"
     path_to_ds = path_to_datasets + "default_MTSD/"
     path_to_train_labels = path_to_ds + "train/labels/"
     path_to_val_labels   = path_to_ds + "val/labels/"
-    labels_folders = [path_to_val_labels]
+    labels_folders = [path_to_train_labels,path_to_val_labels]
 
     # 1. Create COCO txt labels from json
     for folder in labels_folders :

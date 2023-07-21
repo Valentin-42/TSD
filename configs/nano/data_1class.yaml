@@ -1,0 +1,8 @@
+path : /mnt/gpu_storage/traffic-sign-detection/TSD/datasets/
+train: default_MTSD/train/images/
+val  : default_MTSD/val/images/
+test : default_MTSD/test/images/
+
+# class names
+names: 
+  0: 'traffic_sign'

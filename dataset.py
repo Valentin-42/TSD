@@ -3,6 +3,9 @@ import os
 import shutil
 import random
 
+labels = []
+
+
 def Create_Dataset_Architecture(ds_root,dataset_name) :
     folders    = ["train", "val", "test"]
     subfolders = ["images","labels"]
@@ -38,7 +41,14 @@ def json_to_COCO_format(json_file_path, single_class=False) :
             for obj in objects:
                 label = obj['label']
                 if single_class :
-                    label = "0"
+                    label_id = "0"
+                else :
+                    if label in labels :
+                        label_id = labels.index(label)
+                    else :
+                        labels.append(label)
+                        label_id = labels.index(label)
+                        print(f"New class {label} : id {len(labels)}")
                 bbox  = obj['bbox']
                 xmin  = bbox['xmin']
                 ymin  = bbox['ymin']
@@ -48,7 +58,7 @@ def json_to_COCO_format(json_file_path, single_class=False) :
                 width_n = (xmax - xmin)/w
                 height_n = (ymax - ymin)/h
                 
-                line = f"{label} {xmin/w} {ymin/h} {width_n} {height_n}\n"
+                line = f"{label_id} {xmin/w} {ymin/h} {width_n} {height_n}\n"
                 text_file.write(line)
 
 def normalize_txt():
@@ -168,19 +178,28 @@ if __name__ == '__main__':
     path_to_val_labels   = path_to_ds + "val/labels/"
     labels_folders = [path_to_val_labels]
 
-    # # 1. Create COCO txt labels from json
-    # for folder in labels_folders :
-    #     for json_f in os.listdir(folder) :
-    #         print(folder+json_f)
-    #         json_to_COCO_format(json_file_path=folder+json_f,single_class=True)
+    # 1. Create COCO txt labels from json
+    for folder in labels_folders :
+        for json_f in os.listdir(folder) :
+            print(folder+json_f)
+            if not json_f.endswith(".json") :
+                continue
+            json_to_COCO_format(json_file_path=folder+json_f,single_class=False)
+
+    txt_file_path = "classes_desc.txt"
+    with open(txt_file_path, 'w') as text_file:
+        for label in labels:
+            label_id = labels.index(label)
+            line = f"{label_id}: '{label}' \n"
+            text_file.write(line)
 
     # Create_Dataset_Architecture(path_to_datasets,"light_MTSD")
     # create_light_dataset("test",4)
 
     # normalize_txt()
 
-    train_image_path = "./datasets/light_MTSD/train/images/"
-    train_label_path = "./datasets/light_MTSD/train/labels/"
+    # train_image_path = "./datasets/light_MTSD/train/images/"
+    # train_label_path = "./datasets/light_MTSD/train/labels/"
 
     # for image in os.listdir(train_image_path) :
     #     print(image.split('.')[0])

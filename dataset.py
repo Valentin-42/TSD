@@ -27,10 +27,9 @@ def move_image(image_key,folder):
     path = os.path.join('./MTSD/extracted/images/', '{:s}.jpg'.format(image_key))
     shutil.copy(path, folder+"/images/")
 
-def json_to_COCO_format(json_file_path, single_class=False) :
+def json_to_COCO_format(json_file_path, txt_file_path, single_class=False) :
 
     # output : <object-class-id> <x> <y> <width> <height>
-    txt_file_path = os.path.splitext(json_file_path)[0] + ".txt"
     with open(json_file_path, 'r') as json_file:
         data = json.load(json_file)
         w = data['width']
@@ -178,13 +177,17 @@ if __name__ == '__main__':
     path_to_val_labels   = path_to_ds + "val/labels/"
     labels_folders = [path_to_train_labels,path_to_val_labels]
 
+
     # 1. Create COCO txt labels from json
     for folder in labels_folders :
+        labels_folder_path = folder+"/labels2/"
+        os.mkdir(labels_folder_path)
         for json_f in os.listdir(folder) :
             print(folder+json_f)
+            labels_txt_path = labels_folder_path + json_f.split('.')[0] + ".txt"
             if not json_f.endswith(".json") :
                 continue
-            json_to_COCO_format(json_file_path=folder+json_f,single_class=False)
+            json_to_COCO_format(json_file_path=folder+json_f,txt_file_path=labels_txt_path,single_class=False)
 
     txt_file_path = "classes_desc.txt"
     with open(txt_file_path, 'w') as text_file:

@@ -26,7 +26,7 @@ if __name__ == "__main__":
                             gpu_per_trial=1,
                             max_samples= 5,
                             epochs=50,
-                            batch=128)
+                            batch=64)
     
     print("   >>>>>    ")
     print(result_grid)

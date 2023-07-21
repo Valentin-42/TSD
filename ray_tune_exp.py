@@ -2,7 +2,7 @@ from ultralytics import YOLO
 import yaml
 import ray
 from ray import tune
-from ray.tune.trainable.function_trainable.FunctionTrainable import wrap_function
+from ray.tune.trainable.function_trainable import wrap_function
 
 @wrap_function
 def train_yolov8(data, copy_paste, scale, mosaic, imgsz):

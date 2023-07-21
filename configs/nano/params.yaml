@@ -1,13 +1,13 @@
 model : ./configs/nano/yolov8n.pt  # path to model file, i.e. yolov8n.pt, yolov8n.yaml
 # model : ./runs/detect/train/weights/last.pt
 data  : ./configs/nano/data.yaml  # path to data file, i.e. coco128.yaml
-project : "./runs/detect/augmented/"
+# project : "./runs/detect/augmented/"
 
 # Basic params
 epochs : 100  # number of epochs to train for
 batch : 16  # number of images per batch (-1 for AutoBatch)
 imgsz : 640  # size of input images as integer or w,h
-single_cls : True  # train multi-class data as single-class
+single_cls : False  # train multi-class data as single-class
 save : True  # save train checkpoints and predict results
 patience : 50  # epochs to wait for no observable improvement for early stopping of training
 device : None  # device to run on, i.e. cuda device:0 or device:0,1,2,3 or device:cpu

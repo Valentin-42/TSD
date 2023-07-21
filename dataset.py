@@ -170,8 +170,6 @@ def create_light_dataset(folder,factor):
         print(f".. {file_name} .. -> {100*(i/num_files_to_extract)} %")
 
 
-
-
 if __name__ == '__main__':
 
     path_to_datasets = "./datasets/"

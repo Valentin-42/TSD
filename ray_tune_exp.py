@@ -5,7 +5,7 @@ from ray import tune
 from ray.tune.function_runner import wrap_function
 
 @wrap_function
-def train_yolov8(data, copy_paste, scale, mosaic):
+def train_yolov8(data, copy_paste, scale, mosaic, imgsz):
     # Load the YOLOv8 model
     model = YOLO("yolov8n.pt")
 
@@ -17,6 +17,9 @@ def train_yolov8(data, copy_paste, scale, mosaic):
 
     # Set the mosaic augmentation parameter
     model.mosaic = mosaic
+
+    # Set the imgsz parameter
+    model.imgsz = imgsz
 
     # Train the model
     data="./configs/nano/data.yaml"
@@ -40,5 +43,6 @@ if __name__ == "__main__":
             "copy_paste": tune.choice([0.0,0.4,0.8]),
             "scale": tune.choice([0.0,0.4, 0.8]),
             "mosaic": tune.choice([0.0,0.4, 0.8]),
+            "imgsz": tune.choice([416, 608, 800]),
         }
     )

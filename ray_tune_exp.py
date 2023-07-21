@@ -3,6 +3,9 @@ import yaml
 import ray
 from ray import tune
 from ray.tune.trainable.function_trainable import wrap_function
+from ray.tune.tuner import Tuner, TuneConfig
+
+
 
 
 @wrap_function
@@ -22,21 +25,25 @@ def train_yolov8(config):
 
 if __name__ == "__main__":
 
-    # Create a Ray Tune experiment
-    tune_experiment = ray.tune.Experiment(
-        name="yolov8-copy_paste-scale-mosaic-imgsz-tuning",
-        function=train_yolov8,
-        metric="val_loss",
-        mode="min",
-        resources_per_trial={"gpu": 1},
-        num_samples=10,
-        config={
+    param_space={
             "copy_paste": tune.choice([0.0,0.4,0.8]),
             "scale": tune.choice([0.0,0.4, 0.8]),
             "mosaic": tune.choice([0.0,0.4, 0.8]),
             "imgsz": tune.choice([416, 608, 800]),
         }
-    )
+    
+    model = YOLO("yolov8n.pt")
+    data_path="./configs/nano/data.yaml"
 
-    # Tune the hyperparameters
-    tune_experiment.run()
+    # Run Ray Tune on the model
+    result_grid = model.tune(data=data_path,
+                            space=param_space,
+                            gpu_per_trial=1,
+                            epochs=50)
+    
+    print("   >>>>>    ")
+    print(result_grid)
+    print("   >>>>>    ")
+    txt_file_path = "results.txt"
+    with open(txt_file_path, 'w') as text_file:
+        text_file.write(result_grid)

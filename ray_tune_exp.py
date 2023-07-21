@@ -20,7 +20,7 @@ def train_yolov8(config):
     model.imgsz = config["imgsz"]
 
     # Train the model
-    data="./configs/nano/data.yaml"
+    data="/mnt/gpu_storage/traffic-sign-detection/TSD/configs/nano/data.yaml"
     model.train(data,epochs=100)
 
 if __name__ == "__main__":

@@ -6,23 +6,6 @@ from ray.tune.trainable.function_trainable import wrap_function
 from ray.tune.tuner import Tuner, TuneConfig
 
 
-
-
-@wrap_function
-def train_yolov8(config):
-    # Load the YOLOv8 model
-    model = YOLO("yolov8n.pt")
-
-    # Set the hyperparameters from the config dictionary
-    model.copy_paste = config["copy_paste"]
-    model.scale = config["scale"]
-    model.mosaic = config["mosaic"]
-    model.imgsz = config["imgsz"]
-
-    # Train the model
-    data="/mnt/gpu_storage/traffic-sign-detection/TSD/configs/nano/data.yaml"
-    model.train(data,epochs=100)
-
 if __name__ == "__main__":
 
     param_space={

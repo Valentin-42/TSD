@@ -4,22 +4,17 @@ import ray
 from ray import tune
 from ray.tune.trainable.function_trainable import wrap_function
 
+
 @wrap_function
-def train_yolov8(data, copy_paste, scale, mosaic, imgsz):
+def train_yolov8(config):
     # Load the YOLOv8 model
     model = YOLO("yolov8n.pt")
 
-    # Set the copy_paste augmentation parameter
-    model.copy_paste = copy_paste
-
-    # Set the scale augmentation parameter
-    model.scale = scale
-
-    # Set the mosaic augmentation parameter
-    model.mosaic = mosaic
-
-    # Set the imgsz parameter
-    model.imgsz = imgsz
+    # Set the hyperparameters from the config dictionary
+    model.copy_paste = config["copy_paste"]
+    model.scale = config["scale"]
+    model.mosaic = config["mosaic"]
+    model.imgsz = config["imgsz"]
 
     # Train the model
     data="./configs/nano/data.yaml"
@@ -29,20 +24,19 @@ if __name__ == "__main__":
 
     # Create a Ray Tune experiment
     tune_experiment = ray.tune.Experiment(
-        name="yolov8-copy_paste-scale-mosaic-tuning",
+        name="yolov8-copy_paste-scale-mosaic-imgsz-tuning",
         function=train_yolov8,
         metric="val_loss",
         mode="min",
         resources_per_trial={"gpu": 1},
         num_samples=10,
-    )
-
-    # Tune the copy_paste, scale, and mosaic augmentation parameters
-    tune_experiment.run(
-        {
+        config={
             "copy_paste": tune.choice([0.0,0.4,0.8]),
             "scale": tune.choice([0.0,0.4, 0.8]),
             "mosaic": tune.choice([0.0,0.4, 0.8]),
             "imgsz": tune.choice([416, 608, 800]),
         }
     )
+
+    # Tune the hyperparameters
+    tune_experiment.run()

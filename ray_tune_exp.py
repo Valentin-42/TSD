@@ -9,10 +9,10 @@ from ray.tune.tuner import Tuner, TuneConfig
 if __name__ == "__main__":
 
     param_space={
-            "copy_paste": tune.choice([0.0,0.4,0.8]),
-            "scale": tune.choice([0.0,0.4, 0.8]),
-            "mosaic": tune.choice([0.0,0.4, 0.8]),
-            "imgsz": tune.choice([416, 608, 800]),
+            "copy_paste": tune.choice([0.3,0.8]),
+            "scale": tune.choice([0.3, 0.8]),
+            "mosaic": tune.choice([0.3, 0.8]),
+            "imgsz": tune.choice([608, 800]),
         }
     
     model = YOLO("yolov8n.pt")

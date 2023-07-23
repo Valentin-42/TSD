@@ -1,6 +1,6 @@
 from ultralytics import YOLO
 
-model_weights ="./datasets/runs/dry_run_100epochs/weights/best.pt"
+model_weights ="/mnt/gpu_storage/traffic-sign-detection/TSD/runs/detect/train/weights/best.pt"
 
 # Load a model
 model = YOLO(model_weights)  # load a custom model

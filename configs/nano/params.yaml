@@ -22,7 +22,7 @@ warmup_bias_lr : 0.1  # warmup initial bias lr
 
 # Augmentation
 
-scale: 0.3  # image scale (+/- gain) # Original 0.2
+scale: 0.8  # image scale (+/- gain) # Original 0.2
 shear: 0.2  # image shear (+/- deg) from -0.5 to 0.5
 perspective: 0.1  # image perspective (+/- fraction), range 0-0.001 
 flipud: 0.7  # image flip up-down (probability)

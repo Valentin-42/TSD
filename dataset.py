@@ -3,6 +3,9 @@ import os
 import shutil
 import random
 
+from ultralytics import YOLO
+import cv2
+import numpy as np
 labels = []
 
 
@@ -168,8 +171,31 @@ def create_light_dataset(folder,factor):
             shutil.copy(annot_path,dest_an_path)
         print(f".. {file_name} .. -> {100*(i/num_files_to_extract)} %")
 
+def multi_res_set(folder) :
+
+    res_dict = {}
+    for f in os.listdir(folder) :
+        if not f.endswith(".jpg") :
+            continue
+        
+        img = cv2.imread(f)
+        w,h, c = img.shape
+
+        res = w*h 
+        if res in res_dict.keys() :
+            res_dict[res].append(f)
+        else :
+            res_dict[res] = [f]
+
+    with open(os.path.join(folder,"multi_res.json"), "w") as f:
+        json.dump(res_dict, f)
+
+
+
+
 
 if __name__ == '__main__':
+
 
     path_to_datasets = "./datasets/"
     path_to_ds = path_to_datasets + "default_MTSD/"
@@ -178,23 +204,23 @@ if __name__ == '__main__':
     labels_folders = [path_to_train_labels,path_to_val_labels]
 
 
-    # 1. Create COCO txt labels from json
-    for folder in labels_folders :
-        labels_folder_path = folder+"/labels2/"
-        os.mkdir(labels_folder_path)
-        for json_f in os.listdir(folder) :
-            print(folder+json_f)
-            labels_txt_path = labels_folder_path + json_f.split('.')[0] + ".txt"
-            if not json_f.endswith(".json") :
-                continue
-            json_to_COCO_format(json_file_path=folder+json_f,txt_file_path=labels_txt_path,single_class=False)
+    # # 1. Create COCO txt labels from json
+    # for folder in labels_folders :
+    #     labels_folder_path = folder+"/labels2/"
+    #     os.mkdir(labels_folder_path)
+    #     for json_f in os.listdir(folder) :
+    #         print(folder+json_f)
+    #         labels_txt_path = labels_folder_path + json_f.split('.')[0] + ".txt"
+    #         if not json_f.endswith(".json") :
+    #             continue
+    #         json_to_COCO_format(json_file_path=folder+json_f,txt_file_path=labels_txt_path,single_class=False)
 
-    txt_file_path = "classes_desc.txt"
-    with open(txt_file_path, 'w') as text_file:
-        for label in labels:
-            label_id = labels.index(label)
-            line = f"{label_id}: '{label}' \n"
-            text_file.write(line)
+    # txt_file_path = "classes_desc.txt"
+    # with open(txt_file_path, 'w') as text_file:
+    #     for label in labels:
+    #         label_id = labels.index(label)
+    #         line = f"{label_id}: '{label}' \n"
+    #         text_file.write(line)
 
     # Create_Dataset_Architecture(path_to_datasets,"light_MTSD")
     # create_light_dataset("test",4)

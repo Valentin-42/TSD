@@ -10,8 +10,8 @@ if __name__ == "__main__":
 
     param_space={
             "copy_paste": tune.choice([0.3,0.8]),
-            "scale": tune.choice([0.3, 0.8]),
-            "mosaic": tune.choice([0.3, 0.8]),
+            "scale": tune.choice([0.3,0.8]),
+            "mosaic": tune.choice([0.3,0.8]),
         }
     
     model = YOLO("yolov8n.pt")
@@ -26,8 +26,7 @@ if __name__ == "__main__":
                             gpu_per_trial=1,
                             max_samples= 5,
                             epochs=50,
-                            batch=64,
-                            resume=True)
+                            batch=64)
     
     print("   >>>>>    ")
     print(result_grid)

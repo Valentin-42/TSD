@@ -24,8 +24,8 @@ if __name__ == "__main__":
     result_grid = model.tune(data=data_path,
                             space=param_space,
                             gpu_per_trial=1,
-                            max_samples= 5,
-                            epochs=50,
+                            max_samples= 4,
+                            epochs=25,
                             batch=32)
     
     print("   >>>>>    ")

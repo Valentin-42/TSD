@@ -23,7 +23,7 @@ if __name__ == "__main__":
     # Run Ray Tune on the model
     result_grid = model.tune(data=data_path,
                             space=param_space,
-                            gpu_per_trial=1,
+                            gpu_per_trial=2,
                             max_samples= 4,
                             epochs=50,
                             batch=16)

@@ -6,6 +6,7 @@ import random
 from ultralytics import YOLO
 import cv2
 import numpy as np
+import matplotlib.pyplot as plt
 labels = []
 
 
@@ -177,18 +178,86 @@ def multi_res_set(folder) :
     for f in os.listdir(folder) :
         if not f.endswith(".jpg") :
             continue
-        
-        img = cv2.imread(f)
+        print(folder+f)
+        img = cv2.imread(folder+f)
         w,h, c = img.shape
 
         res = w*h 
         if res in res_dict.keys() :
             res_dict[res].append(f)
         else :
+            print(f"New res {w}*{h}")
             res_dict[res] = [f]
+    
+    print(len(res_dict))
+    # with open(os.path.join("multi_res.json"), "w") as f:
+    #     json.dump(res_dict, f)
 
-    with open(os.path.join(folder,"multi_res.json"), "w") as f:
-        json.dump(res_dict, f)
+def multi_environment(folder) :
+    env_dict = {"occluded":[],"out-of-frame":[],"ambiguous":[],"dummy":[]}
+    for f in os.listdir(folder) :
+        if not f.endswith(".json") :
+            continue
+        print(folder+f)
+        with open(folder+f, "r") as json_f:
+            data = json.load(json_f)
+
+        for obj in data["objects"] :
+            for key in obj["properties"].keys() :
+                if obj["properties"][key] == True and key in env_dict.keys() :
+                    env_dict[key].append(f)
+
+    # # Create a list of the keys in the dictionary
+    # keys = env_dict.keys()
+    # # Create a list of the lengths of the lists in the dictionary
+    # values = [len(value) for value in env_dict.values()]
+    # # Create a bar plot of the data
+    # plt.bar(keys, values)
+    # # Add a title to the plot
+    # plt.title("Environment repartition")
+    # # Add labels to the x-axis and y-axis
+    # plt.xlabel("Traffic sign Environnement characteristics")
+    # plt.ylabel("Number of image containing a least one object")
+    # # Show the plot
+    # plt.show()
+
+    print(env_dict)
+    with open(os.path.join("multi_env.json"), "w") as f:
+        json.dump(env_dict, f)
+    f.close()
+
+def create_multi_res(output_folder,an_folder, im_folder) :
+
+    desc = {}
+
+    with open("multi_res.json", "r") as json_f:
+        data = json.load(json_f)
+
+    for key in data.keys() :
+        for img in data[key] :
+            im_path = os.path.join(im_folder, img)
+            an_path = os.path.join(an_folder, img.split(".")[0]+".json")
+            with open(an_path, "r") as json_f:
+                data_an = json.load(json_f)
+            
+            if not len(data_an["objects"]) == 1 :
+                continue
+            obj = data_an["objects"][0]
+            bbox   = obj['bbox']
+            width  = bbox['xmax']-bbox['xmin']
+            height = bbox['ymax']-bbox['ymin']
+            
+            if width*height < 1024 :
+                #There is one small object
+                desc[key] = img
+                shutil.copy(im_path,os.path.join(output_folder,"images/"))
+                shutil.copy(an_path,os.path.join(output_folder,"labels/"))
+            print(img)
+
+    print(desc)
+    with open(os.path.join(output_folder,"desc.json"), "w") as f:
+        json.dump(desc, f)
+    f.close()
 
 
 
@@ -196,13 +265,19 @@ def multi_res_set(folder) :
 
 if __name__ == '__main__':
 
-
     path_to_datasets = "./datasets/"
     path_to_ds = path_to_datasets + "default_MTSD/"
     path_to_train_labels = path_to_ds + "train/labels/"
     path_to_val_labels   = path_to_ds + "val/labels/"
+    path_to_val_images   = path_to_ds + "val/images/"
+
     labels_folders = [path_to_train_labels,path_to_val_labels]
 
+    # multi_res_set(path_to_ds+"val/images/")
+    # multi_environment(path_to_ds+"val/labels/")
+
+    path = "./datasets/test_sets/resolution/"
+    create_multi_res(path,path_to_val_labels,path_to_val_images)
 
     # # 1. Create COCO txt labels from json
     # for folder in labels_folders :

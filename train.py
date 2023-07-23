@@ -47,6 +47,9 @@ def start_training_scratch() :
     print(str(args))
     results = model.train(**args)
 
+
+
+
 if __name__ == "__main__":
     start_training_scratch()
 

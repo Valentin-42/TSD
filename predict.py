@@ -2,6 +2,27 @@ from ultralytics import YOLO
 import cv2
 import numpy as np
 import os
+import json
+
+def compute_iou(boxA, boxB):
+        # determine the (x, y)-coordinates of the intersection rectangle
+        xA = max(boxA[0], boxB[0])
+        yA = max(boxA[1], boxB[1])
+        xB = min(boxA[0] + boxA[2], boxB[0] + boxB[2])
+        yB = min(boxA[1] + boxA[3], boxB[1] + boxB[3])
+    
+        # compute the area of intersection rectangle
+        interArea = max(0, xB - xA) * max(0, yB - yA)
+    
+        # compute the area of both the prediction and ground-truth rectangles
+        boxAArea = boxA[2] * boxA[3]
+        boxBArea = boxB[2] * boxB[3]
+    
+        # compute the intersection over union by taking the intersection
+        # area and dividing it by the sum of prediction + ground-truth
+        # areas - the interesection area
+        iou = float(interArea / float(boxAArea + boxBArea - interArea))
+        return iou
 
 def predict_on_images(folder_path, save_path, model_weights_path) :
 
@@ -32,7 +53,6 @@ def predict_on_images(folder_path, save_path, model_weights_path) :
     with open(save_path+"stats.txt","w+") as f:
         line = f"AVG confidence scores : {avg_conf}"
         f.write(line)
-
 
 def predict_on_video(video_path,FPS,model_weights_path,output_path) :
     # Read the video
@@ -70,6 +90,15 @@ def predict_on_video(video_path,FPS,model_weights_path,output_path) :
             break
     # Release the video capture and output video
     video.release()
+
+def predict_vs_resolution() :
+    with open("multi_res.json", "r") as f:
+        data = json.load(f)
+    
+    for key, value in data.items():
+        print(key, value)
+        
+
 
 if __name__ == '__main__':
 

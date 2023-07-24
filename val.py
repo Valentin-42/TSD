@@ -36,6 +36,7 @@ def predict_on_set_resolution(im_folder_path, an_folder_path, save_path, model_w
     confidence_scores = [] 
     ious = []
     resolutions = []
+    no_detections = []
 
     for j,img_name in enumerate(os.listdir(im_folder_path)) :
         img = im_folder_path + img_name
@@ -43,8 +44,7 @@ def predict_on_set_resolution(im_folder_path, an_folder_path, save_path, model_w
         results = model(img)
         image = cv2.imread(img)
         boxes = results[0].boxes
-        if not len(boxes) > 0 :
-             continue
+
         for i,box in enumerate(boxes) :
             bb = box.xywh[0]
             x,y,w,h = bb[0],bb[1],bb[2],bb[3]
@@ -60,22 +60,44 @@ def predict_on_set_resolution(im_folder_path, an_folder_path, save_path, model_w
         bbox   = obj['bbox']
         bbox_ = [bbox["xmin"],bbox["ymin"],bbox["xmax"]-bbox["xmin"],bbox["ymax"]-bbox["ymin"]]
 
-        iou = compute_iou(bbox_,bb)
+
+        if len(boxes) == 0 : # No DT
+            print("NO DT")
+            confidence_scores.append(0)
+            resolutions.append(res)
+            ious.append(0)
+            no_detections.append(1)
+            iou = 0
+        else :
+            iou = compute_iou(bbox_,bb)
+            confidence_scores.append(conf)
+            resolutions.append(res)
+            no_detections.append(0)
+            ious.append(abs(iou))
+        
         x,y,w,h = bbox_[0],bbox_[1],bbox_[2],bbox_[3]
         cv2.rectangle(image, (int(x), int(y)), (int(x+w), int(y+h)), (0, 0, 255), 3)
         cv2.putText(image, "GT : "+str(int(iou*100))+" iou", (int(x+w), int(y+h)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-        
-        confidence_scores.append(conf)
-        resolutions.append(res)
-        ious.append(abs(iou))
+
         cv2.imwrite(os.path.join(save_path,img_name),image)
     
-
     sorted_indices = np.argsort(resolutions)
     sorted_res = np.asarray(resolutions)[sorted_indices]
     sorted_conf = np.asarray(confidence_scores)[sorted_indices]
-    
-    plt.plot(sorted_res,sorted_conf)
+    sorted_ious = np.asarray(ious)[sorted_indices]
+
+    sorted_no_dt = np.asarray(no_detections)[sorted_indices]
+
+    plt.scatter(sorted_res,sorted_conf)
+    plt.bar(sorted_res, sorted_conf, align='center', alpha=0.5, color='gray', width=0.2, edgecolor='black')
+    plt.show()
+
+    plt.scatter(sorted_res,sorted_ious)
+    plt.bar(sorted_res, sorted_ious, align='center', alpha=0.5, color='gray', width=0.2, edgecolor='black')
+    plt.show()
+
+    plt.scatter(sorted_res,sorted_no_dt)
+    plt.bar(sorted_res, sorted_no_dt, align='center', alpha=0.5, color='gray', width=0.2, edgecolor='black')
     plt.show()
 
     avg_conf = sum(confidence_scores)/len(confidence_scores)

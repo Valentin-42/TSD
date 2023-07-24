@@ -107,7 +107,8 @@ if __name__ == '__main__':
     ranging = "C:/Users/valen/Desktop/testing/New Unity Project/Recordings/1080p_60fps_30mps/"
     ranging_480 = "C:/Users/valen/Desktop/testing/New Unity Project/Recordings/480p_60fps_60mps/" 
     model_weights = "./datasets/runs/dry_run_100epochs/weights/best.pt"
-    predict_on_images(ranging_480,"./datasets/runs/dry_run_100epochs/inference/","./datasets/runs/dry_run_100epochs/weights/best.pt")
+    # predict_on_images(ranging_480,"./datasets/runs/dry_run_100epochs/inference/","./datasets/runs/dry_run_100epochs/weights/best.pt")
     
     video_path = "./datasets/test_sets/Ranging/IMG_2741.MOV"
-    # predict_on_video(video_path,60,model_weights,output_path)
+    video640 = "./datasets/test_sets/Ranging/640x640/movie_008.mp4"
+    predict_on_video(video640,60,model_weights,output_path)

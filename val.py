@@ -59,6 +59,7 @@ def predict_on_set_resolution(im_folder_path, an_folder_path, save_path, model_w
         obj = data["objects"][0]
         bbox   = obj['bbox']
         bbox_ = [bbox["xmin"],bbox["ymin"],bbox["xmax"]-bbox["xmin"],bbox["ymax"]-bbox["ymin"]]
+        x,y,w,h = bbox_[0],bbox_[1],bbox_[2],bbox_[3]
 
 
         if len(boxes) == 0 : # No DT
@@ -74,11 +75,10 @@ def predict_on_set_resolution(im_folder_path, an_folder_path, save_path, model_w
             resolutions.append(res)
             no_detections.append(0)
             ious.append(abs(iou))
-        
-        x,y,w,h = bbox_[0],bbox_[1],bbox_[2],bbox_[3]
-        cv2.rectangle(image, (int(x), int(y)), (int(x+w), int(y+h)), (0, 0, 255), 3)
-        cv2.putText(image, "GT : "+str(int(iou*100))+" iou", (int(x+w), int(y+h)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            cv2.putText(image, "GT : "+str(int(iou*100))+" iou", (int(x+w), int(y+h)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
+        
+        cv2.rectangle(image, (int(x), int(y)), (int(x+w), int(y+h)), (0, 0, 255), 3)
         cv2.imwrite(os.path.join(save_path,img_name),image)
     
 

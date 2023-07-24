@@ -302,11 +302,11 @@ if __name__ == '__main__':
 
     path = "./datasets/test_sets/"
     path1 = "./datasets/test_sets/resolution/labels/"
-    path2 = "./datasets/test_sets/Ranging/labels/"
+    # path2 = "./datasets/test_sets/Ranging/labels/"
     path3 = "./datasets/test_sets/occluded/labels/"
     path4 = "./datasets/test_sets/ambiguous/labels/"
 
-    labels_folders = [path1,path2,path3,path4]
+    labels_folders = [path1,path3,path4]
 
     # multi_res_set(path_to_ds+"val/images/")
     # multi_environment(path_to_ds+"val/labels/")

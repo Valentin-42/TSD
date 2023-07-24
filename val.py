@@ -70,34 +70,13 @@ def predict_on_set_resolution(im_folder_path, an_folder_path, save_path, model_w
         ious.append(abs(iou))
         cv2.imwrite(os.path.join(save_path,img_name),image)
     
-    # Create bins/categories for resolutions
-    resolution_bins = [0, 50000, 100000, 200000, 300000, np.inf]  # Customize the bin ranges as needed
 
-    # Initialize lists to store the total confidence scores and counts for each bin
-    total_confidence_per_bin = [0] * len(resolution_bins)
-    counts_per_bin = [0] * len(resolution_bins)
-
-    # Group resolutions into the bins
-    for resolution, confidence_score in zip(resolutions, confidence_scores):
-        for i in range(len(resolution_bins) - 1):
-            if resolution_bins[i] <= resolution < resolution_bins[i + 1]:
-                total_confidence_per_bin[i] += confidence_score
-                counts_per_bin[i] += 1
-                break
-
-    # Calculate average confidence score for each bin
-    avg_confidence_per_bin = [total_confidence / count if count > 0 else 0 for total_confidence, count in zip(total_confidence_per_bin, counts_per_bin)]
-
-    # Create the bar plot
-    plt.figure(figsize=(10, 6))
-    plt.bar(range(len(resolution_bins) - 1), avg_confidence_per_bin)
-    plt.xlabel('Resolution Categories')
-    plt.ylabel('Average Confidence Score')
-    plt.title('Average Confidence Score per Resolution Category')
-    plt.xticks(range(len(resolution_bins) - 1), ['0-50K', '50K-100K', '100K-200K', '200K-300K', '300K+'])  # Customize labels if needed
-    plt.grid(axis='y', linestyle='--', alpha=0.7)
+    sorted_indices = np.argsort(resolutions)
+    sorted_res = resolutions[sorted_indices]
+    sorted_conf = confidence_scores[sorted_indices]
+    plt.plot(sorted_res,sorted_conf)
     plt.show()
-    
+
     avg_conf = sum(confidence_scores)/len(confidence_scores)
     avg_ious = sum(ious)/len(ious)
 

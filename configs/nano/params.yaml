@@ -5,7 +5,7 @@ data  : ./configs/nano/data.yaml  # path to data file, i.e. coco128.yaml
 
 # Basic params
 epochs : 50  # number of epochs to train for
-batch : 256  # number of images per batch (-1 for AutoBatch)
+batch : 128  # number of images per batch (-1 for AutoBatch)
 imgsz : 320  # size of input images as integer or w,h
 single_cls : False  # train multi-class data as single-class
 save : True  # save train checkpoints and predict results

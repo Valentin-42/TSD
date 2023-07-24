@@ -8,7 +8,7 @@ model = YOLO(model_weights)  # load a custom model
 print("model loaded")
 
 # Validate the model
-metrics = model.val(save_json=True)  # no arguments needed, dataset and settings remembered
+metrics = model.val(device=1,save_json=True)  # no arguments needed, dataset and settings remembered
 
 
 

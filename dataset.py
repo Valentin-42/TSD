@@ -259,8 +259,37 @@ def create_multi_res(output_folder,an_folder, im_folder) :
         json.dump(desc, f)
     f.close()
 
+def create_environment(output_folder,an_folder, im_folder) :
 
+    with open("multi_env.json", "r") as json_f:
+        data_env = json.load(json_f)
 
+    for type in data_env.keys() :
+        print(type)
+        output_folder_type = os.path.join(output_folder,type)
+        if not os.path.exists(output_folder_type) :
+            os.mkdir(output_folder_type)
+            os.mkdir(os.path.join(output_folder_type,"images/"))
+            os.mkdir(os.path.join(output_folder_type,"labels/"))
+
+        for fjson in data_env[type] :
+            print(fjson)
+            an_path=os.path.join(an_folder,fjson)
+            with open(an_path, "r") as json_f:
+                data = json.load(json_f)
+
+            if not len(data["objects"]) == 1 :
+                continue
+            obj = data["objects"][0]
+            bbox   = obj['bbox']
+            width  = bbox['xmax']-bbox['xmin']
+            height = bbox['ymax']-bbox['ymin']
+            
+            if width*height < 1024 :
+                #There is one small object
+                im_path = os.path.join(im_folder, fjson.split(".")[0]+".jpg")
+                shutil.copy(im_path,os.path.join(output_folder_type,"images/"))
+                shutil.copy(an_path,os.path.join(output_folder_type,"labels/"))
 
 
 if __name__ == '__main__':
@@ -276,9 +305,9 @@ if __name__ == '__main__':
     # multi_res_set(path_to_ds+"val/images/")
     # multi_environment(path_to_ds+"val/labels/")
 
-    path = "./datasets/test_sets/resolution/"
-    create_multi_res(path,path_to_val_labels,path_to_val_images)
-
+    path = "./datasets/test_sets/"
+    # create_multi_res(path,path_to_val_labels,path_to_val_images)
+    create_environment(path,path_to_val_labels,path_to_val_images)
     # # 1. Create COCO txt labels from json
     # for folder in labels_folders :
     #     labels_folder_path = folder+"/labels2/"

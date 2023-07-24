@@ -81,6 +81,7 @@ def predict_on_set_resolution(im_folder_path, an_folder_path, save_path, model_w
 
         cv2.imwrite(os.path.join(save_path,img_name),image)
     
+
     sorted_indices = np.argsort(resolutions)
     sorted_res = np.asarray(resolutions)[sorted_indices]
     sorted_conf = np.asarray(confidence_scores)[sorted_indices]
@@ -102,13 +103,14 @@ def predict_on_set_resolution(im_folder_path, an_folder_path, save_path, model_w
 
     avg_conf = sum(confidence_scores)/len(confidence_scores)
     avg_ious = sum(ious)/len(ious)
-
+    success_rate = 100 - (sum(no_detections)/len(os.listdir(im_folder_path)) * 100)
     with open(save_path+"stats.txt","w+") as f:
-        line = f"AVG confidence scores : {avg_conf}"
+        line = f"AVG confidence scores : {avg_conf} \n"
         f.write(line)
-        line = f"AVG ious scores : {avg_ious}"
+        line = f"AVG ious scores : {avg_ious} \n"
         f.write(line)
-
+        line = f"Success rate : {success_rate} %\n"
+        f.write(line)
     f.close()
 
 # Load the custom dataset

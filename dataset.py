@@ -300,24 +300,29 @@ if __name__ == '__main__':
     path_to_val_labels   = path_to_ds + "val/labels/"
     path_to_val_images   = path_to_ds + "val/images/"
 
-    labels_folders = [path_to_train_labels,path_to_val_labels]
+    path = "./datasets/test_sets/"
+    path1 = "./datasets/test_sets/resolution/labels/"
+    path2 = "./datasets/test_sets/Ranging/labels/"
+    path3 = "./datasets/test_sets/occluded/labels/"
+    path4 = "./datasets/test_sets/ambiguous/labels/"
+
+    labels_folders = [path1,path2,path3,path4]
 
     # multi_res_set(path_to_ds+"val/images/")
     # multi_environment(path_to_ds+"val/labels/")
 
-    path = "./datasets/test_sets/"
     # create_multi_res(path,path_to_val_labels,path_to_val_images)
-    create_environment(path,path_to_val_labels,path_to_val_images)
-    # # 1. Create COCO txt labels from json
-    # for folder in labels_folders :
-    #     labels_folder_path = folder+"/labels2/"
-    #     os.mkdir(labels_folder_path)
-    #     for json_f in os.listdir(folder) :
-    #         print(folder+json_f)
-    #         labels_txt_path = labels_folder_path + json_f.split('.')[0] + ".txt"
-    #         if not json_f.endswith(".json") :
-    #             continue
-    #         json_to_COCO_format(json_file_path=folder+json_f,txt_file_path=labels_txt_path,single_class=False)
+    # create_environment(path,path_to_val_labels,path_to_val_images)
+
+    # 1. Create COCO txt labels from json
+    for folder in labels_folders :
+        labels_folder_path = folder
+        for json_f in os.listdir(folder) :
+            print(folder+json_f)
+            labels_txt_path = labels_folder_path + json_f.split('.')[0] + ".txt"
+            if not json_f.endswith(".json") :
+                continue
+            json_to_COCO_format(json_file_path=folder+json_f,txt_file_path=labels_txt_path,single_class=False)
 
     # txt_file_path = "classes_desc.txt"
     # with open(txt_file_path, 'w') as text_file:

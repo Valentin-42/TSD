@@ -71,7 +71,7 @@ def predict_on_video(video_path,FPS,model_weights_path,output_path) :
         # Get a frame from the video
         ret, img = video.read()
         # Check if the video is finished
-        if not ret:
+        if ret:
             break
         img_o = img.copy()
 

@@ -35,7 +35,7 @@ copy_paste: 0.8  # segment copy-paste (probability) # Original 0.0
 # # Advanced params
 workers : 8  # number of worker threads for data loading (per RANK if DDP)
 # project : None  # project name
-name : 320  # experiment name
+name : "320_exp"  # experiment name
 exist_ok : True  # whether to overwrite existing experiment
 # pretrained : False  # whether to use a pretrained model
 # optimizer : 'auto'  # optimizer to use, choices:[SGD, Adam, Adamax, AdamW, NAdam, RAdam, RMSProp, auto]

@@ -1,5 +1,5 @@
-# model : ./configs/nano/yolov8n.pt  # path to model file, i.e. yolov8n.pt, yolov8n.yaml
-model : ./runs/detect/train31/weights/last.pt
+model : ./configs/nano/yolov8n.pt  # path to model file, i.e. yolov8n.pt, yolov8n.yaml
+# model : ./runs/detect/train31/weights/last.pt
 data  : ./configs/nano/data.yaml  # path to data file, i.e. coco128.yaml
 # project : "./runs/detect/augmented/"
 

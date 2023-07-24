@@ -55,6 +55,7 @@ def predict_on_images(folder_path, save_path, model_weights_path) :
         f.write(line)
 
 def predict_on_video(video_path,FPS,model_weights_path,output_path) :
+    print(output_path)
     # Read the video
     video = cv2.VideoCapture(video_path)
     print("Video loaded")
@@ -71,8 +72,9 @@ def predict_on_video(video_path,FPS,model_weights_path,output_path) :
         # Get a frame from the video
         ret, img = video.read()
         # Check if the video is finished
-        if ret:
+        if not ret:
             break
+
         img_o = img.copy()
 
         results = model(img)
@@ -85,11 +87,11 @@ def predict_on_video(video_path,FPS,model_weights_path,output_path) :
             cv2.rectangle(img_o, (int(x), int(y)), (int(x+w), int(y+h)), (100, 200, 0), 3)
             cv2.putText(img_o, str(int(box.conf[0].item()*100)), (int(x), int(y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
-        cv2.imwrite(output_path+str(num)+".jpg", img_o)
+        cv2.imwrite(os.path.join(output_path, str(num)+".jpg"), img_o)
         num +=1
 
     avg_conf = sum(confidence_scores)/len(confidence_scores)
-    with open(output_path+"stats.txt","w+") as f:
+    with open(os.path.join(output_path,"stats.txt"),"w+") as f:
         line = f"AVG confidence scores : {avg_conf}"
         f.write(line)
 
@@ -115,12 +117,15 @@ if __name__ == '__main__':
     # predict_on_images(ranging_480,"./datasets/runs/dry_run_100epochs/inference/","./datasets/runs/dry_run_100epochs/weights/best.pt")
     
     video_path = "./datasets/test_sets/Ranging/IMG_2741.MOV"
+
     video640   = "./datasets/test_sets/Ranging/640x640/movie_008.mp4"
-    video1024  = "./datasets/test_sets/Ranging/640x640/movie_007.mp4"
+    video1024  = "./datasets/test_sets/Ranging/1024x1024/movie_007.mp4"
     video4k  = "./datasets/test_sets/Ranging/2560x1440/movie_010.mp4"
+
     videos = [video640,video1024,video4k]
     output_fld_names = ["640","1024","1440"]
     for i,video in enumerate(videos) :
         print(video)
-        os.mkdir(os.path.join(output_path,output_fld_names[i]))
-        predict_on_video(video1024,60,model_weights,output_path)
+        if not os.path.exists(os.path.join(output_path,output_fld_names[i])):
+            os.mkdir(os.path.join(output_path,output_fld_names[i]))
+        predict_on_video(video,60,model_weights,os.path.join(output_path,output_fld_names[i]))

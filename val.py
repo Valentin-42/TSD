@@ -72,8 +72,9 @@ def predict_on_set_resolution(im_folder_path, an_folder_path, save_path, model_w
     
 
     sorted_indices = np.argsort(resolutions)
-    sorted_res = resolutions[sorted_indices]
-    sorted_conf = confidence_scores[sorted_indices]
+    sorted_res = np.asarray(resolutions)[sorted_indices]
+    sorted_conf = np.asarray(confidence_scores)[sorted_indices]
+    
     plt.plot(sorted_res,sorted_conf)
     plt.show()
 

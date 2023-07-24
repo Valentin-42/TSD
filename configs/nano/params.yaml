@@ -10,7 +10,7 @@ imgsz : 640  # size of input images as integer or w,h
 single_cls : False  # train multi-class data as single-class
 save : True  # save train checkpoints and predict results
 patience : 50  # epochs to wait for no observable improvement for early stopping of training
-device : 0,1  # device to run on, i.e. cuda device:0 or device:0,1,2,3 or device:cpu
+device : 0  # device to run on, i.e. cuda device:0 or device:0,1,2,3 or device:cpu
 save_period : 10  # Save checkpoint every x epochs (disabled if < 1)
 resume : False  # resume training from last checkpoint
 lr0 : 0.01  # initial learning rate (i.e. SGD:1E-2, Adam:1E-3)

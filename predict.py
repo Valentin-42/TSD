@@ -70,9 +70,12 @@ def predict_on_video(video_path,FPS,model_weights_path,output_path) :
         print(num)
         # Get a frame from the video
         ret, img = video.read()
+        # Check if the video is finished
+        if not ret:
+            break
         img_o = img.copy()
 
-        results = model(img, stream=True)
+        results = model(img)
         boxes = results[0].boxes
         for i,box in enumerate(boxes) :
             bb = box.xywh[0]
@@ -85,9 +88,11 @@ def predict_on_video(video_path,FPS,model_weights_path,output_path) :
         cv2.imwrite(output_path+str(num)+".jpg", img_o)
         num +=1
 
-        # Check if the video is finished
-        if not ret:
-            break
+    avg_conf = sum(confidence_scores)/len(confidence_scores)
+    with open(output_path+"stats.txt","w+") as f:
+        line = f"AVG confidence scores : {avg_conf}"
+        f.write(line)
+
     # Release the video capture and output video
     video.release()
 
@@ -110,5 +115,12 @@ if __name__ == '__main__':
     # predict_on_images(ranging_480,"./datasets/runs/dry_run_100epochs/inference/","./datasets/runs/dry_run_100epochs/weights/best.pt")
     
     video_path = "./datasets/test_sets/Ranging/IMG_2741.MOV"
-    video640 = "./datasets/test_sets/Ranging/640x640/movie_008.mp4"
-    predict_on_video(video640,60,model_weights,output_path)
+    video640   = "./datasets/test_sets/Ranging/640x640/movie_008.mp4"
+    video1024  = "./datasets/test_sets/Ranging/640x640/movie_007.mp4"
+    video4k  = "./datasets/test_sets/Ranging/2560x1440/movie_010.mp4"
+    videos = [video640,video1024,video4k]
+    output_fld_names = ["640","1024","1440"]
+    for i,video in enumerate(videos) :
+        print(video)
+        os.mkdir(os.path.join(output_path,output_fld_names[i]))
+        predict_on_video(video1024,60,model_weights,output_path)

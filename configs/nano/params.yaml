@@ -15,7 +15,7 @@ save_period : 10  # Save checkpoint every x epochs (disabled if < 1)
 resume : False  # resume training from last checkpoint
 lr0 : 0.01  # initial learning rate (i.e. SGD:1E-2, Adam:1E-3)
 lrf : 0.01  # final learning rate (lr0 * lrf)
-cache : True  # True/ram, disk or False. Use cache for data loading
+cache : False  # True/ram, disk or False. Use cache for data loading
 warmup_epochs : 3.0  # warmup epochs (fractions ok)
 warmup_momentum : 0.8  # warmup initial momentum
 warmup_bias_lr : 0.1  # warmup initial bias lr

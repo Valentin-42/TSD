@@ -114,13 +114,14 @@ def predict_on_set_resolution(im_folder_path, an_folder_path, save_path, model_w
     f.close()
 
 def predict_on_set(im_folder_path, an_folder_path, save_path, model_weights_path):
-        # Load a model
+    # Load a model
     model = YOLO(model_weights_path)
     print("Model loaded")
 
     confidence_scores = [] 
     ious = []
     no_detections = []
+    resolutions = []
 
     for j,img_name in enumerate(os.listdir(im_folder_path)) :
         img = im_folder_path + img_name
@@ -145,7 +146,8 @@ def predict_on_set(im_folder_path, an_folder_path, save_path, model_weights_path
             ious.append(0)
             no_detections.append(1)
             iou = 0
-            cv2.putText(image, "Missed", cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            resolutions.append(res)
+            cv2.putText(image, "Missed", (int(x), int(y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
         elif len(boxes) > 1 : #Wrong DT
             iou = 0
@@ -160,6 +162,7 @@ def predict_on_set(im_folder_path, an_folder_path, save_path, model_weights_path
                 no_detections.append(1)     
                 ious.append(0)     
                 confidence_scores.append(0)
+                resolutions.append(res)
             else :
                 for i,box in enumerate(boxes) :
                     iou_ = compute_iou(bbox_,bb)
@@ -168,27 +171,39 @@ def predict_on_set(im_folder_path, an_folder_path, save_path, model_weights_path
                         ious.append(iou_)  
                         conf = box.conf[0].item()
                         confidence_scores.append(conf)
+                        resolutions.append(res)
                         bb = box.xywh[0]
-                        x,y,w,h = bb[0],bb[1],bb[2],bb[3]
-                        cv2.rectangle(image, (int(x), int(y)), (int(x+w), int(y+h)), (100, 200, 0), 3)
-                        cv2.putText(image, str(int(conf*100))+"%", (int(x), int(y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (100, 200, 0), 2)
+                        xd,yd,wd,hd = bb[0],bb[1],bb[2],bb[3]
+                        cv2.rectangle(image, (int(xd), int(yd)), (int(xd+wd), int(yd+hd)), (100, 200, 0), 3)
+                        cv2.putText(image, str(int(conf*100))+"%", (int(xd), int(yd)), cv2.FONT_HERSHEY_SIMPLEX, 1, (100, 200, 0), 2)
                     else :
                         no_detections.append(1)   
                         ious.append(0)  
                         confidence_scores.append(0)
-        else : # Good DT
+                        resolutions.append(res)
+
+        else : # Good DT of misplaced
             box = boxes[0]
             bb = box.xywh[0]
-            x,y,w,h = bb[0],bb[1],bb[2],bb[3]
-            conf = box.conf[0].item()
-            cv2.rectangle(image, (int(x), int(y)), (int(x+w), int(y+h)), (100, 200, 0), 3)
-            cv2.putText(image, str(int(conf*100))+"%", (int(x), int(y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (100, 200, 0), 2)
             iou = compute_iou(bbox_,bb)
-            confidence_scores.append(conf)
-            no_detections.append(0)
-            ious.append(abs(iou))
-            cv2.putText(image, "GT : "+str(int(iou*100))+" iou", (int(x+w), int(y+h)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-        
+            xd,yd,wd,hd = bb[0],bb[1],bb[2],bb[3]
+            conf = box.conf[0].item()
+            cv2.rectangle(image, (int(xd), int(yd)), (int(xd+wd), int(yd+hd)), (100, 200, 0), 3)
+            if (iou == 0) :
+                confidence_scores.append(conf)
+                no_detections.append(1)
+                ious.append(abs(iou))
+                resolutions.append(res)
+                cv2.putText(image, str(int(conf*100))+"%", (int(xd), int(yd)), cv2.FONT_HERSHEY_SIMPLEX, 1, (100, 200, 0), 2)
+                cv2.putText(image, "Missed", (int(x+w), int(y+h)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            else :
+                confidence_scores.append(conf)
+                no_detections.append(0)
+                ious.append(abs(iou))
+                resolutions.append(res)
+                cv2.putText(image, str(int(conf*100))+"%", (int(xd), int(yd)), cv2.FONT_HERSHEY_SIMPLEX, 1, (100, 200, 0), 2)
+                cv2.putText(image, "GT : "+str(int(iou*100))+" iou", (int(x+w), int(y+h)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            
         cv2.rectangle(image, (int(x), int(y)), (int(x+w), int(y+h)), (255, 0, 255), 1)
         cv2.imwrite(os.path.join(save_path,img_name),image)
     
@@ -205,20 +220,52 @@ def predict_on_set(im_folder_path, an_folder_path, save_path, model_weights_path
         f.write(line)
     f.close()
 
+    plot_res()
+
+    def plot_res() :
+        sorted_indices = np.argsort(resolutions)
+        sorted_res = np.asarray(resolutions)[sorted_indices]
+        sorted_conf = np.asarray(confidence_scores)[sorted_indices]
+        sorted_ious = np.asarray(ious)[sorted_indices]
+
+        sorted_no_dt = np.asarray(no_detections)[sorted_indices]
+        sorted_dt = sorted_no_dt
+
+        for i,el in enumerate(sorted_no_dt) :
+            if el == 1 :
+                sorted_dt[i] = -1
+            else :
+                sorted_dt[i] = 1
+
+
+        plt.scatter(sorted_res,sorted_conf)
+        plt.bar(sorted_res, sorted_conf, align='center', alpha=0.5, color='gray', width=0.2, edgecolor='black')
+        plt.show()
+
+        plt.scatter(sorted_res,sorted_ious)
+        plt.bar(sorted_res, sorted_ious, align='center', alpha=0.5, color='gray', width=0.2, edgecolor='black')
+        plt.show()
+
+        plt.scatter(sorted_res,sorted_dt)
+        plt.bar(sorted_res, sorted_no_dt, align='center', alpha=0.5, color='gray', width=0.2, edgecolor='black')
+        plt.show()
+
 
 
 # Load the custom dataset
-model_weights ="./datasets/runs/dry_run_100epochs/weights/best.pt"
 
-#ambiguous occluded
-set = "ambiguous" #ambiguous occluded resolution
-set = "occluded"
+for model in ["train","dry_run_100epochs"] :
 
-test_set_img = f"./datasets/test_sets/{set}/images/"
-test_set_an =  f"./datasets/test_sets/{set}/labels/"
+    model_weights = f"./datasets/runs/{model}/weights/best.pt"
 
-save_path = f"./datasets/runs/dry_run_100epochs/inference/{set}/"
-if not os.path.exists(save_path):
-    os.mkdir(save_path)
-# predict_on_set_resolution(test_set_img,test_set_an,save_path,model_weights)
-predict_on_set(test_set_img, test_set_an, save_path, model_weights)
+    #ambiguous occluded
+    for set in ["ambiguous", "occluded"] : 
+
+        test_set_img = f"./datasets/test_sets/{set}/images/"
+        test_set_an =  f"./datasets/test_sets/{set}/labels/"
+
+        save_path = f"./datasets/runs/{model}/inference/{set}/"
+        if not os.path.exists(save_path):
+            os.makedirs(save_path)
+        # predict_on_set_resolution(test_set_img,test_set_an,save_path,model_weights)
+        predict_on_set(test_set_img, test_set_an, save_path, model_weights)

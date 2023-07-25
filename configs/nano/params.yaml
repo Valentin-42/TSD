@@ -22,20 +22,20 @@ warmup_bias_lr : 0.1  # warmup initial bias lr
 
 # Augmentation
 
-scale: 0.8  # image scale (+/- gain) # Original 0.2
+scale: 0.5  # image scale (+/- gain) # Original 0.2
 shear: 0.2  # image shear (+/- deg) from -0.5 to 0.5
 perspective: 0.1  # image perspective (+/- fraction), range 0-0.001 
 flipud: 0.7  # image flip up-down (probability)
 fliplr: 0.5  # image flip left-right (probability)
-mosaic: 0.8  # image mosaic (probability) # Initially 0.3
+mosaic: 0.5  # image mosaic (probability) # Initially 0.3
 mixup: 0.1  # image mixup (probability)
 copy_paste: 0.8  # segment copy-paste (probability) # Original 0.0
 
 
 # # Advanced params
-workers : 8  # number of worker threads for data loading (per RANK if DDP)
+# workers : 8  # number of worker threads for data loading (per RANK if DDP)
 # project : None  # project name
-name : "320_exp"  # experiment name
+name : "320_exp_lower"  # experiment name
 exist_ok : True  # whether to overwrite existing experiment
 # pretrained : False  # whether to use a pretrained model
 # optimizer : 'auto'  # optimizer to use, choices:[SGD, Adam, Adamax, AdamW, NAdam, RAdam, RMSProp, auto]

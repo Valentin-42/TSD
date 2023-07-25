@@ -113,7 +113,7 @@ def predict_on_set_resolution(im_folder_path, an_folder_path, save_path, model_w
         f.write(line)
     f.close()
 
-def predict_on_set(im_folder_path, an_folder_path, save_path, model_weights_path):
+def predict_on_set(im_folder_path, an_folder_path, save_path, model_weights_path, plot=False):
     # Load a model
     model = YOLO(model_weights_path)
     print("Model loaded")
@@ -220,8 +220,6 @@ def predict_on_set(im_folder_path, an_folder_path, save_path, model_weights_path
         f.write(line)
     f.close()
 
-    plot_res()
-
     def plot_res() :
         sorted_indices = np.argsort(resolutions)
         sorted_res = np.asarray(resolutions)[sorted_indices]
@@ -250,16 +248,18 @@ def predict_on_set(im_folder_path, an_folder_path, save_path, model_weights_path
         plt.bar(sorted_res, sorted_no_dt, align='center', alpha=0.5, color='gray', width=0.2, edgecolor='black')
         plt.show()
 
+    if plot ==True:
+        plot_res()
 
 
 # Load the custom dataset
 
-for model in ["train","dry_run_100epochs"] :
+for model in ["train2","train","dry_run_100epochs"] :
 
     model_weights = f"./datasets/runs/{model}/weights/best.pt"
-
+    model_weights = "./datasets/train2/_tune_1211e_00000_0_copy_paste=0.8000,mosaic=0.3000,scale=0.3000_2023-07-23_11-12-39/yolov8n.pt"
     #ambiguous occluded
-    for set in ["ambiguous", "occluded"] : 
+    for set in ["resolution","ambiguous", "occluded"] : 
 
         test_set_img = f"./datasets/test_sets/{set}/images/"
         test_set_an =  f"./datasets/test_sets/{set}/labels/"
@@ -268,4 +268,10 @@ for model in ["train","dry_run_100epochs"] :
         if not os.path.exists(save_path):
             os.makedirs(save_path)
         # predict_on_set_resolution(test_set_img,test_set_an,save_path,model_weights)
-        predict_on_set(test_set_img, test_set_an, save_path, model_weights)
+        if set == "resolution" :
+            plot=True
+        else :
+            plot=False
+            print("end res")
+        predict_on_set(test_set_img, test_set_an, save_path, model_weights,plot)
+    break

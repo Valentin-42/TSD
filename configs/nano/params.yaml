@@ -22,14 +22,14 @@ warmup_bias_lr : 0.1  # warmup initial bias lr
 
 # Augmentation
 
-scale: 0.8  # image scale (+/- gain) # Original 0.2
+scale: 0.5  # image scale (+/- gain) # Original 0.2
 shear: 0.2  # image shear (+/- deg) from -0.5 to 0.5
 perspective: 0.1  # image perspective (+/- fraction), range 0-0.001 
 flipud: 0.7  # image flip up-down (probability)
 fliplr: 0.5  # image flip left-right (probability)
-mosaic: 0.8  # image mosaic (probability) # Initially 0.3
+mosaic: 0.5  # image mosaic (probability) # Initially 0.3
 mixup: 0.1  # image mixup (probability)
-copy_paste: 0.8  # segment copy-paste (probability) # Original 0.0
+copy_paste: 0.5  # segment copy-paste (probability) # Original 0.0
 
 
 # # Advanced params

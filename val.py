@@ -122,6 +122,9 @@ def predict_on_set(im_folder_path, an_folder_path, save_path, model_weights_path
     ious = []
     no_detections = []
     resolutions = []
+    TP = [] # GT and DT
+    FN = [] # No dt but GT
+    FP = [] # Dt but not GT
 
     for j,img_name in enumerate(os.listdir(im_folder_path)) :
         img = im_folder_path + img_name
@@ -134,20 +137,16 @@ def predict_on_set(im_folder_path, an_folder_path, save_path, model_weights_path
             data= json.load(json_f)
 
         res = data["width"] * data["height"]
+        resolutions.append(res)
         obj = data["objects"][0]
         bbox   = obj['bbox']
         bbox_ = [bbox["xmin"],bbox["ymin"],bbox["xmax"]-bbox["xmin"],bbox["ymax"]-bbox["ymin"]]
         x,y,w,h = bbox_[0],bbox_[1],bbox_[2],bbox_[3]
 
-
         if len(boxes) == 0  : # No DT 
-            print("NO DT")
-            confidence_scores.append(0)
-            ious.append(0)
-            no_detections.append(1)
-            iou = 0
-            resolutions.append(res)
-            cv2.putText(image, "Missed", (int(x), int(y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            print("No DT but GT")
+            FN.append(1) # No DT but GT
+            cv2.putText(image, "Not Detected", (int(x), int(y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
         elif len(boxes) > 1 : #Wrong DT
             iou = 0
@@ -155,52 +154,46 @@ def predict_on_set(im_folder_path, an_folder_path, save_path, model_weights_path
             for i,box in enumerate(boxes) :
                 bb = box.xywh[0]
                 iou_ = compute_iou(bbox_,bb)
-                if iou_ > iou :
+                if iou_ > iou : # Find max iou
                     iou = iou_
                     idx = i
-            if idx == None :
-                no_detections.append(1)     
-                ious.append(0)     
-                confidence_scores.append(0)
-                resolutions.append(res)
-            else :
+
+            if idx == None : # If none of the dt are overlapping
+                FP.append(1) # DT but no GT
+
+            else : # One overlap so one DT with GT 
                 for i,box in enumerate(boxes) :
                     iou_ = compute_iou(bbox_,bb)
                     if iou_ == iou :
-                        no_detections.append(0)   
-                        ious.append(iou_)  
+                        ious.append(iou_)  # we found the corresponding DT
                         conf = box.conf[0].item()
                         confidence_scores.append(conf)
-                        resolutions.append(res)
                         bb = box.xywh[0]
                         xd,yd,wd,hd = bb[0],bb[1],bb[2],bb[3]
                         cv2.rectangle(image, (int(xd), int(yd)), (int(xd+wd), int(yd+hd)), (100, 200, 0), 3)
                         cv2.putText(image, str(int(conf*100))+"%", (int(xd), int(yd)), cv2.FONT_HERSHEY_SIMPLEX, 1, (100, 200, 0), 2)
+                        TP.append(1)
                     else :
-                        no_detections.append(1)   
-                        ious.append(0)  
-                        confidence_scores.append(0)
-                        resolutions.append(res)
+                        FP.append(1) #DT but No GT
+                        confidence_scores.append(box.conf[0].item())
 
-        else : # Good DT of misplaced
+        else : # Good 1 DT 
             box = boxes[0]
             bb = box.xywh[0]
             iou = compute_iou(bbox_,bb)
             xd,yd,wd,hd = bb[0],bb[1],bb[2],bb[3]
             conf = box.conf[0].item()
+            confidence_scores.append(conf)
             cv2.rectangle(image, (int(xd), int(yd)), (int(xd+wd), int(yd+hd)), (100, 200, 0), 3)
-            if (iou == 0) :
-                confidence_scores.append(conf)
-                no_detections.append(1)
-                ious.append(abs(iou))
-                resolutions.append(res)
+
+            if (iou == 0) : #Check if not well placed
+                FP.append(1)
                 cv2.putText(image, str(int(conf*100))+"%", (int(xd), int(yd)), cv2.FONT_HERSHEY_SIMPLEX, 1, (100, 200, 0), 2)
                 cv2.putText(image, "Missed", (int(x+w), int(y+h)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
-            else :
+            else : # Nice placed
+                TP.append(1)
                 confidence_scores.append(conf)
-                no_detections.append(0)
                 ious.append(abs(iou))
-                resolutions.append(res)
                 cv2.putText(image, str(int(conf*100))+"%", (int(xd), int(yd)), cv2.FONT_HERSHEY_SIMPLEX, 1, (100, 200, 0), 2)
                 cv2.putText(image, "GT : "+str(int(iou*100))+" iou", (int(x+w), int(y+h)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
             
@@ -208,15 +201,23 @@ def predict_on_set(im_folder_path, an_folder_path, save_path, model_weights_path
         cv2.imwrite(os.path.join(save_path,img_name),image)
     
 
-    avg_conf = sum(confidence_scores)/len(confidence_scores)
-    avg_ious = sum(ious)/len(ious)
-    success_rate = 100 - (sum(no_detections)/len(os.listdir(im_folder_path)) * 100)
+    avg_conf = sum(confidence_scores)/(len(confidence_scores)+1e-6)
+    avg_ious = sum(ious)/(len(ious)+1e-6)
+
+    accuracy  = sum(TP) / (sum(TP) + sum(FP) + sum(FN) +1e-6) *100
+    precision = sum(TP) / (sum(TP) + sum(FP) +1e-6) *100
+    recall    = sum(TP) / (sum(TP) + sum(FN) +1e-6) *100
+
     with open(save_path+"stats.txt","w+") as f:
         line = f"AVG confidence scores : {avg_conf} \n"
         f.write(line)
         line = f"AVG ious scores : {avg_ious} \n"
         f.write(line)
-        line = f"Success rate : {success_rate} %\n"
+        line = f"accuracy : {accuracy} %\n"
+        f.write(line)
+        line = f"precision : {precision} %\n"
+        f.write(line)
+        line = f"recall : {recall} %\n"
         f.write(line)
     f.close()
 
@@ -248,13 +249,13 @@ def predict_on_set(im_folder_path, an_folder_path, save_path, model_weights_path
         plt.bar(sorted_res, sorted_no_dt, align='center', alpha=0.5, color='gray', width=0.2, edgecolor='black')
         plt.show()
 
-    if plot ==True:
-        plot_res()
+    # if plot ==True:
+        # plot_res()
 
 
 # Load the custom dataset
 
-for model in ["train2","train","dry_run_100epochs"] :
+for model in ["train2","dry_run_100epochs","train"] :
 
     model_weights = f"./datasets/runs/{model}/weights/best.pt"
     model_weights = "./datasets/train2/_tune_1211e_00000_0_copy_paste=0.8000,mosaic=0.3000,scale=0.3000_2023-07-23_11-12-39/yolov8n.pt"

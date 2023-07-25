@@ -113,7 +113,9 @@ if __name__ == '__main__':
     
     ranging = "C:/Users/valen/Desktop/testing/New Unity Project/Recordings/1080p_60fps_30mps/"
     ranging_480 = "C:/Users/valen/Desktop/testing/New Unity Project/Recordings/480p_60fps_60mps/" 
-    model_weights = "./datasets/runs/dry_run_100epochs/weights/best.pt"
+
+    model = "train" # dry_run_100epochs
+    model_weights = f"./datasets/runs/{model}/weights/best.pt"
     # predict_on_images(ranging_480,"./datasets/runs/dry_run_100epochs/inference/","./datasets/runs/dry_run_100epochs/weights/best.pt")
     
     video_path = "./datasets/test_sets/Ranging/IMG_2741.MOV"

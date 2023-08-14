@@ -47,6 +47,79 @@ def start_training_scratch() :
     print(str(args))
     results = model.train(**args)
 
+def optimizer_tuning(path_to_weights, path_to_config) :
+    model = YOLO(path_to_weights)
+
+    # Default params
+    model.epochs   = 50
+    model.imgsz    = 50
+    model.save_period = 10
+    model.data     = path_to_config
+    model.device   = 0
+    model.exist_ok = True
+    model.batch    = 128
+    model.project_name = "Optimizer_Tuning" 
+    # 
+    experiments = {
+            'Opt-SGD': {'optimizer':'SGD', 'lr0':0.01, 'lrf':0.01},
+            'Opt-Adam': {'optimizer':'Adam', 'lr0':0.01, 'lrf':0.01},
+            'Opt-SGD2': {'optimizer':'SGD', 'lr0':0.02, 'lrf':0.01},
+            'Opt-Adam2': {'optimizer':'Adam', 'lr0':0.02, 'lrf':0.01},
+            'Opt-SGD5': {'optimizer':'SGD', 'lr0':0.05, 'lrf':0.01},
+            'Opt-Adam5': {'optimizer':'Adam', 'lr0':0.05, 'lrf':0.01},
+        }
+
+    for exp in experiments.keys() : 
+        model.name = exp
+        model.optimizer = experiments[exp]["optimizer"]
+        model.lr0 = experiments[exp]["lr0"]
+        model.lrf = experiments[exp]["lrf"]
+        results = model.train()
+
+
+
+def hpp_tuning(path_to_weights, path_to_config) :
+
+    model = YOLO(path_to_weights)
+
+    # Default params
+    model.epochs   = 50
+    model.imgsz    = 50
+    model.save_period = 10
+    model.data     = path_to_config
+    model.device   = 0
+    model.exist_ok = True
+    model.batch    = 128
+    model.project_name = "Hyperparams_Tuning" 
+    model.optimizer = 'SGD'
+
+    # 
+    curve = [0.0, 0.35, 0.65, 1.0]
+    i,j,k,l = 0
+    for exp in range(4**4) : 
+        model.name = f"exp_{exp}"
+        model.mosaic = curve[i] 
+        model.mixup = curve[j]
+        model.copy_paste = curve[k]
+        model.scale = curve[l]
+
+        results = model.train()
+        i+= 1
+        j+= round(i/4)
+        k+= round(j/4)
+        l+= round(l/4)
+
+        if i == 4 :
+            i=0
+        elif j ==4:
+            j=0
+        elif k==4:
+            k=0
+        elif l==4 :
+            l=0
+
+
+
 
 
 if __name__ == "__main__":

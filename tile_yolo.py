@@ -38,11 +38,9 @@ def tiler(imnames, newpath, slice_size, ext):
             boxes.append((obj['label'], Polygon([(x1, y1), (x2, y1), (x2, y2), (x1, y2)])))
       
         counter = 0
-        print('Image:', imname)
         # create tiles and find intersection with bounding boxes for each tile
         for i in range(0, width, slice_size):
             for j in range(0, height, slice_size):
-                print(f"{i} / {j}")
                 x1 = i
                 y1 = j
                 x2 = (i + slice_size) - 1
@@ -79,9 +77,8 @@ def tiler(imnames, newpath, slice_size, ext):
                         sliced_im = Image.fromarray(sliced)
                         filename = imname.split('/')[-1]
                         print(filename)
-                        slice_path = os.path.join(newpath, filename.replace(ext, f'_{i}_{j}{ext}'))                         
-                        slice_labels_path = os.path.join(newpath, filename.replace(ext, f'_{i}_{j}.txt'))                            
-                        print(f'Sliced : {slice_path} & {slice_labels_path}')
+                        slice_path = newpath+"/"+filename.replace(ext, f'_{i}_{j}{ext}')                      
+                        slice_labels_path = newpath+"/"+filename.replace(ext, f'_{i}_{j}.txt')                      
                         sliced_im.save(slice_path)
                         imsaved = True
             
@@ -122,13 +119,11 @@ def filter(label_path, cnt, max_per_clc) :
     return cnt, False
 
 def splitter(source, target, ext, ratio, max):
-
-    labnames = [source+"/"+f for f in os.listdir(source) if f.endswith(".txt")]
-    
+    labnames = [source+"/"+f.replace(ext, '.txt') for f in os.listdir(source)]
     if len(labnames) == 0 :
         print("error", source)
         return
-    elif len(labnames) > max :
+    elif max > len(labnames) :
         print(" /!\ Dataset size asked superior to available images => taking max possible ")
 
     t_train_im = os.path.join(target, 'train/images')
@@ -144,17 +139,16 @@ def splitter(source, target, ext, ratio, max):
     cnt_train = {'total':0, 'empty':0, '0':0, '1':0, '2':0, '3':0, '4':0}
     cnt_val   = {'total':0, 'empty':0, '0':0, '1':0, '2':0, '3':0, '4':0}
     i = 0
-
+    print("Starting ... ")
     for name in labnames:
 
         im_path     = name.replace('.txt', '.jpg')                       
         labels_path = name
-        
         if random.random() > ratio:
             cnt_val, jump = filter(labels_path, cnt_val, max_val//6)
             if jump : 
                 continue
-            shutil.copy(im_path    , t_val_im)
+            # shutil.copy(im_path    , t_val_im)
             shutil.copy(labels_path, t_val_lab)
             cnt_val['total']+=1
 
@@ -162,17 +156,18 @@ def splitter(source, target, ext, ratio, max):
             cnt_train, jump = filter(labels_path, cnt_train, max_train//6)
             if jump :
                 continue
-            shutil.copy(im_path    , t_train_im)
+            # shutil.copy(im_path    , t_train_im)
             shutil.copy(labels_path, t_train_lab)
             cnt_train['total']+=1
 
 
         i+=1
         if i == max :
-            print('== Dataset created ==') 
-            print('train:', cnt_train)
-            print('val:', cnt_val)
             break
+
+    print('== Dataset created ==') 
+    print('train:', cnt_train)
+    print('val:', cnt_val)
          
 if __name__ == "__main__":
     # Initialize parser
@@ -181,19 +176,23 @@ if __name__ == "__main__":
     parser.add_argument("-source", default="./MTSD/extracted", help = "Source folder with images and labels needed to be tiled")
     parser.add_argument("-target", default="./sliced/", help = "Target folder for a new sliced dataset")
     parser.add_argument("-ext", default=".jpg", help = "Image extension in a dataset. Default: .jpg")
-    parser.add_argument("-size", type=int, default=512, help = "Size of a tile. Default: 512")
+    parser.add_argument("-size", type=int, default=640, help = "Size of a tile. Default: 512")
     parser.add_argument("-split", type=bool, default=True, help = "True : Split into dataset")
-    parser.add_argument("-max", type=int, default=80, help = "Number of total images")
+    parser.add_argument("-max", type=int, default=10000, help = "Number of total images")
     parser.add_argument("-ratio", type=float, default=0.8, help = "Train/val split ratio from max. Dafault: 0.8")
 
     args = parser.parse_args()
 
-    imnames  = [args.source+"/images/"+f for f in os.listdir(args.source+"/images/") if f.endswith(".jpg")]
     labnames = [args.source+"/labels/"+f for f in os.listdir(args.source+"/labels/") if f.endswith(".json")]
+    imnames  = [f.replace('json', 'jpg').replace('labels','images') for f in labnames]
+    
+    print(f"{len(labnames)} , {len(imnames)}")
     
     if len(imnames) == 0:
         raise Exception("Source folder should contain some images")
     elif len(imnames) != len(labnames):
+        print(args.source+"/labels/")
+        print(args.source+"/images/")
         raise Exception(f"Dataset should contain equal number of images and txt files with labels {len(labnames)} != {len(imnames)}")
 
 
@@ -207,7 +206,8 @@ if __name__ == "__main__":
     elif len(os.listdir(args.target)) > 0:
         raise Exception("Target folder should be empty")
 
-
-    tiler(imnames[0:max], os.path.join(args.target,'cache'), args.size, args.ext)
+    print(f"== Start Tiling {args.max} img== ")
+    imnames = [f for i,f in enumerate(imnames) if i<args.max]
+    tiler(imnames, os.path.join(args.target,'cache'), args.size, args.ext)
     if args.split :
         splitter(os.path.join(args.target,'cache'), args.target, args.ext, args.ratio, args.max)

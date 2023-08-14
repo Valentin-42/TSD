@@ -1,6 +1,7 @@
 from ultralytics import YOLO
 import yaml
 from ray import tune
+import argparse
 
 def RayTune() :
     data_path = "/mnt/gpu_storage/traffic-sign-detection/TSD/configs/nano/data.yaml"
@@ -11,7 +12,6 @@ def RayTune() :
                             epochs=10,
                             )
     
-
 def fine_tunining(path_to_last_weight,additionnal_epochs) :
     model = YOLO(path_to_last_weight)
     model.resume = True 
@@ -123,10 +123,10 @@ def hpp_tuning(path_to_weights, path_to_config) :
 
 
 if __name__ == "__main__":
-    start_training_scratch()
+    parser = argparse.ArgumentParser()
 
-    # path_to_last_weight = "./runs/detect/train/weights/last.pt"
-    # additionnal_epochs = 100
-    # fine_tunining(path_to_last_weight,additionnal_epochs)
+    parser.add_argument("-w", default="./configs/nano/yolov8n.pt", help = "path to .pt")
+    parser.add_argument("-c", default="./configs/nano/data_4classes.yaml", help = "data file path")
 
-    # RayTune()
+    args = parser.parse_args()
+    optimizer_tuning(args.w, args.c)

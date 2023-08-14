@@ -5,8 +5,8 @@ test : default_MTSD/test/images/
 
 # class names
 names: 
-0 : warning
-1 : other
-2 : information
-3 : regulatory
-4 : complementary
+  0 : warning
+  1 : other
+  2 : information
+  3 : regulatory
+  4 : complementary

@@ -11,7 +11,7 @@ import json
 def tiler(imnames, newpath, slice_size, ext):
 
     for index,imname in enumerate(imnames):
-        print(f"{index//len(imnames)} %",end="\r")
+        print(f"{round(100*index/len(imnames))} %",end="\r")
         im = Image.open(imname)
         imr = np.array(im, dtype=np.uint8)
 

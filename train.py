@@ -51,14 +51,14 @@ def optimizer_tuning(path_to_weights, path_to_config) :
     model = YOLO(path_to_weights)
 
     # Default params
-    model.epochs   = 50
-    model.imgsz    = 50
-    model.save_period = 10
-    model.data     = path_to_config
-    model.device   = 0
-    model.exist_ok = True
-    model.batch    = 128
-    model.project_name = "Optimizer_Tuning" 
+    epochs   = 50
+    imgsz    = 50
+    save_period = 10
+    data     = path_to_config
+    device   = 0
+    exist_ok = True
+    batch    = 128
+    project_name = "Optimizer_Tuning" 
     # 
     experiments = {
             'Opt-SGD': {'optimizer':'SGD', 'lr0':0.01, 'lrf':0.01},
@@ -70,11 +70,25 @@ def optimizer_tuning(path_to_weights, path_to_config) :
         }
 
     for exp in experiments.keys() : 
-        model.name = exp
-        model.optimizer = experiments[exp]["optimizer"]
-        model.lr0 = experiments[exp]["lr0"]
-        model.lrf = experiments[exp]["lrf"]
-        results = model.train()
+        name = exp
+        optimizer = experiments[exp]["optimizer"]
+        lr0 = experiments[exp]["lr0"]
+        lrf = experiments[exp]["lrf"]
+
+        results = model.train(
+            data = data,
+            epochs = epochs,
+            imgsz = imgsz,
+            save_period = save_period,
+            device = device,
+            exist_ok = exist_ok,
+            batch = batch,
+            project_name = project_name,
+            name = name,
+            optimizer = optimizer,
+            lr0 = lr0,
+            lrf = lrf
+        )
 
 
 
@@ -83,27 +97,41 @@ def hpp_tuning(path_to_weights, path_to_config) :
     model = YOLO(path_to_weights)
 
     # Default params
-    model.epochs   = 50
-    model.imgsz    = 50
-    model.save_period = 10
-    model.data     = path_to_config
-    model.device   = 0
-    model.exist_ok = True
-    model.batch    = 128
-    model.project_name = "Hyperparams_Tuning" 
-    model.optimizer = 'SGD'
+    epochs   = 50
+    imgsz    = 50
+    save_period = 10
+    data     = path_to_config
+    device   = 0
+    exist_ok = True
+    batch    = 128
+    project_name = "Hyperparams_Tuning" 
+    optimizer = 'SGD'
 
-    # 
     curve = [0.0, 0.35, 0.65, 1.0]
     i,j,k,l = 0
     for exp in range(4**4) : 
-        model.name = f"exp_{exp}"
-        model.mosaic = curve[i] 
-        model.mixup = curve[j]
-        model.copy_paste = curve[k]
-        model.scale = curve[l]
+        name = f"exp_{exp}"
+        mosaic = curve[i] 
+        mixup = curve[j]
+        copy_paste = curve[k]
+        scale = curve[l]
 
-        results = model.train()
+        results = model.train(
+            data = data,
+            epochs = epochs,
+            imgsz = imgsz,
+            save_period = save_period,
+            device = device,
+            exist_ok = exist_ok,
+            batch = batch,
+            project_name = project_name,
+            name = name,
+            optimizer = optimizer,
+            mosaic = mosaic,
+            mixup = mixup,
+            copy_paste = copy_paste,
+            scale = scale
+        )
         i+= 1
         j+= round(i/4)
         k+= round(j/4)

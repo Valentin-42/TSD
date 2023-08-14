@@ -291,6 +291,45 @@ def create_environment(output_folder,an_folder, im_folder) :
                 shutil.copy(im_path,os.path.join(output_folder_type,"images/"))
                 shutil.copy(an_path,os.path.join(output_folder_type,"labels/"))
 
+def four_classes_set(train_an_folder,output_folder_path,save_data=False) :    
+    num_dict = {}
+    f = open('./classes_desc.txt')
+    for line in f:
+        num = line.split(':')[0]
+        key = line.split(':')[1].split("-")[0].split("'")[1]
+        if key in num_dict.keys() :
+            num_dict[key].append(num) 
+        else : 
+            print(f"New class : {key}")
+            num_dict[key] = [num]
+
+    if save_data :
+        print(num_dict.keys())
+        with open(os.path.join(".","data_4classes.yaml"), "w") as f:
+            for i,k in enumerate(num_dict.keys()) : 
+                line = f"{i} : {k}\n"
+                f.write(line)
+        f.close()
+
+    if not os.path.exists(output_folder_path) :
+        os.mkdir(output_folder_path)
+
+    l = [f for f in os.listdir(train_an_folder) if f.endswith(".json")]
+
+    for an in l :
+        with open(os.path.join(train_an_folder,an), "r") as json_f:
+            data = json.load(json_f)
+
+            for obj in data["objects"] :
+                cls = obj["label"]
+                new_cls = cls.split("-")[0]
+            
+                obj["label"] = new_cls
+
+            with open(os.path.join(output_folder_path,an), "w") as f:
+                json.dump(data, f)
+            f.close()
+
 
 if __name__ == '__main__':
 
@@ -308,21 +347,23 @@ if __name__ == '__main__':
 
     labels_folders = [path1,path3,path4]
 
+    four_classes_set(train_an_folder=path_to_val_labels, output_folder_path=path_to_val_labels+"4classes_labels/",save_data=True)
+
     # multi_res_set(path_to_ds+"val/images/")
     # multi_environment(path_to_ds+"val/labels/")
 
     # create_multi_res(path,path_to_val_labels,path_to_val_images)
     # create_environment(path,path_to_val_labels,path_to_val_images)
 
-    # 1. Create COCO txt labels from json
-    for folder in labels_folders :
-        labels_folder_path = folder
-        for json_f in os.listdir(folder) :
-            print(folder+json_f)
-            labels_txt_path = labels_folder_path + json_f.split('.')[0] + ".txt"
-            if not json_f.endswith(".json") :
-                continue
-            json_to_COCO_format(json_file_path=folder+json_f,txt_file_path=labels_txt_path,single_class=False)
+    # # 1. Create COCO txt labels from json
+    # for folder in labels_folders :
+    #     labels_folder_path = folder
+    #     for json_f in os.listdir(folder) :
+    #         print(folder+json_f)
+    #         labels_txt_path = labels_folder_path + json_f.split('.')[0] + ".txt"
+    #         if not json_f.endswith(".json") :
+    #             continue
+    #         json_to_COCO_format(json_file_path=folder+json_f,txt_file_path=labels_txt_path,single_class=False)
 
     # txt_file_path = "classes_desc.txt"
     # with open(txt_file_path, 'w') as text_file:

@@ -121,10 +121,11 @@ def predict_on_set(im_folder_path, an_folder_path, save_path, model_weights_path
     confidence_scores = [] 
     ious = []
     no_detections = []
-    resolutions = []
     TP = [] # GT and DT
     FN = [] # No dt but GT
     FP = [] # Dt but not GT
+
+    resolutions = {}
 
     for j,img_name in enumerate(os.listdir(im_folder_path)) :
         img = im_folder_path + img_name
@@ -137,7 +138,8 @@ def predict_on_set(im_folder_path, an_folder_path, save_path, model_weights_path
             data= json.load(json_f)
 
         res = data["width"] * data["height"]
-        resolutions.append(res)
+        resolutions[res] = [0,0,0] # TP FP FN
+        
         obj = data["objects"][0]
         bbox   = obj['bbox']
         bbox_ = [bbox["xmin"],bbox["ymin"],bbox["xmax"]-bbox["xmin"],bbox["ymax"]-bbox["ymin"]]
@@ -147,6 +149,7 @@ def predict_on_set(im_folder_path, an_folder_path, save_path, model_weights_path
             print("No DT but GT")
             FN.append(1) # No DT but GT
             cv2.putText(image, "Not Detected", (int(x), int(y)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
+            resolutions[res][1] = resolutions[res][1] + 1
 
         elif len(boxes) > 1 : #Wrong DT
             iou = 0
@@ -160,7 +163,7 @@ def predict_on_set(im_folder_path, an_folder_path, save_path, model_weights_path
 
             if idx == None : # If none of the dt are overlapping
                 FP.append(1) # DT but no GT
-
+                resolutions[res][2] = resolutions[res][2] + 1 
             else : # One overlap so one DT with GT 
                 for i,box in enumerate(boxes) :
                     iou_ = compute_iou(bbox_,bb)
@@ -173,8 +176,10 @@ def predict_on_set(im_folder_path, an_folder_path, save_path, model_weights_path
                         cv2.rectangle(image, (int(xd), int(yd)), (int(xd+wd), int(yd+hd)), (100, 200, 0), 3)
                         cv2.putText(image, str(int(conf*100))+"%", (int(xd), int(yd)), cv2.FONT_HERSHEY_SIMPLEX, 1, (100, 200, 0), 2)
                         TP.append(1)
+                        resolutions[res][0] = resolutions[res][0] + 1 
                     else :
                         FP.append(1) #DT but No GT
+                        resolutions[res][2] = resolutions[res][2] + 1 
                         confidence_scores.append(box.conf[0].item())
 
         else : # Good 1 DT 
@@ -188,10 +193,12 @@ def predict_on_set(im_folder_path, an_folder_path, save_path, model_weights_path
 
             if (iou == 0) : #Check if not well placed
                 FP.append(1)
+                resolutions[res][2] = resolutions[res][2] + 1
                 cv2.putText(image, str(int(conf*100))+"%", (int(xd), int(yd)), cv2.FONT_HERSHEY_SIMPLEX, 1, (100, 200, 0), 2)
                 cv2.putText(image, "Missed", (int(x+w), int(y+h)), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
             else : # Nice placed
                 TP.append(1)
+                resolutions[res][0] = resolutions[res][0] + 1
                 confidence_scores.append(conf)
                 ious.append(abs(iou))
                 cv2.putText(image, str(int(conf*100))+"%", (int(xd), int(yd)), cv2.FONT_HERSHEY_SIMPLEX, 1, (100, 200, 0), 2)
@@ -200,7 +207,7 @@ def predict_on_set(im_folder_path, an_folder_path, save_path, model_weights_path
         cv2.rectangle(image, (int(x), int(y)), (int(x+w), int(y+h)), (255, 0, 255), 1)
         cv2.imwrite(os.path.join(save_path,img_name),image)
     
-
+    print(resolutions)
     avg_conf = sum(confidence_scores)/(len(confidence_scores)+1e-6)
     avg_ious = sum(ious)/(len(ious)+1e-6)
 
@@ -221,44 +228,36 @@ def predict_on_set(im_folder_path, an_folder_path, save_path, model_weights_path
         f.write(line)
     f.close()
 
-    def plot_res() :
-        sorted_indices = np.argsort(resolutions)
-        sorted_res = np.asarray(resolutions)[sorted_indices]
-        sorted_conf = np.asarray(confidence_scores)[sorted_indices]
-        sorted_ious = np.asarray(ious)[sorted_indices]
 
-        sorted_no_dt = np.asarray(no_detections)[sorted_indices]
-        sorted_dt = sorted_no_dt
+    def hist() :
+        keys = list(resolutions.keys())
+        keys.sort()
 
-        for i,el in enumerate(sorted_no_dt) :
-            if el == 1 :
-                sorted_dt[i] = -1
-            else :
-                sorted_dt[i] = 1
+        tp = []
+        fn = []
+        fp = []
+        for key in keys :
+            tp.append(resolutions[key][0])
+            fn.append(resolutions[key][1])
+            fp.append(resolutions[key][2])
 
-
-        plt.scatter(sorted_res,sorted_conf)
-        plt.bar(sorted_res, sorted_conf, align='center', alpha=0.5, color='gray', width=0.2, edgecolor='black')
+        plt.scatter(keys,tp)
+        plt.bar(keys, tp, align='center', alpha=0.5, color='blue', width=0.1, edgecolor='blue')
         plt.show()
 
-        plt.scatter(sorted_res,sorted_ious)
-        plt.bar(sorted_res, sorted_ious, align='center', alpha=0.5, color='gray', width=0.2, edgecolor='black')
-        plt.show()
 
-        plt.scatter(sorted_res,sorted_dt)
-        plt.bar(sorted_res, sorted_no_dt, align='center', alpha=0.5, color='gray', width=0.2, edgecolor='black')
-        plt.show()
+    hist()
 
-    # if plot ==True:
-        # plot_res()
+
 
 
 # Load the custom dataset
 
-for model in ["train2","dry_run_100epochs","train"] :
+for model in ["train","train2"] : #dry_run_100epochs
 
     model_weights = f"./datasets/runs/{model}/weights/best.pt"
-    model_weights = "./datasets/train2/_tune_1211e_00000_0_copy_paste=0.8000,mosaic=0.3000,scale=0.3000_2023-07-23_11-12-39/yolov8n.pt"
+    if model == "train2" :
+        model_weights = "./datasets/train2/_tune_1211e_00000_0_copy_paste=0.8000,mosaic=0.3000,scale=0.3000_2023-07-23_11-12-39/yolov8n.pt"
     #ambiguous occluded
     for set in ["resolution","ambiguous", "occluded"] : 
 
@@ -275,4 +274,4 @@ for model in ["train2","dry_run_100epochs","train"] :
             plot=False
             print("end res")
         predict_on_set(test_set_img, test_set_an, save_path, model_weights,plot)
-    break
+        break

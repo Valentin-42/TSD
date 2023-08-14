@@ -49,7 +49,6 @@ def start_training_scratch() :
 
 
 
-
 if __name__ == "__main__":
     start_training_scratch()
 

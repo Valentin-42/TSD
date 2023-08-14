@@ -109,13 +109,15 @@ def predict_vs_resolution() :
 
 if __name__ == '__main__':
 
-    output_path = "./datasets/runs/dry_run_100epochs/inference/"
     
     ranging = "C:/Users/valen/Desktop/testing/New Unity Project/Recordings/1080p_60fps_30mps/"
     ranging_480 = "C:/Users/valen/Desktop/testing/New Unity Project/Recordings/480p_60fps_60mps/" 
 
-    model = "train" # dry_run_100epochs
-    model_weights = f"./datasets/runs/{model}/weights/best.pt"
+    model = "train2" # dry_run_100epochs
+    output_path = f"./datasets/runs/{model}/inference/"
+    model_weights = "./datasets/train2/_tune_1211e_00000_0_copy_paste=0.8000,mosaic=0.3000,scale=0.3000_2023-07-23_11-12-39/yolov8n.pt"
+
+    # model_weights = f"./datasets/runs/{model}/weights/best.pt"
     # predict_on_images(ranging_480,"./datasets/runs/dry_run_100epochs/inference/","./datasets/runs/dry_run_100epochs/weights/best.pt")
     
     video_path = "./datasets/test_sets/Ranging/IMG_2741.MOV"

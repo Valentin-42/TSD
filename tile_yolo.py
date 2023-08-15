@@ -209,7 +209,6 @@ if __name__ == "__main__":
             continue
         f_p = args.source+"images/"+f
         if not f_p in imnames :
-            imnames.remove(f_p)
             labnames.remove(f_p.replace('jpg', 'txt').replace('images','labels'))
 
     print(f"{len(labnames)} , {len(imnames)}")

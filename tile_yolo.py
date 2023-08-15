@@ -123,7 +123,7 @@ def filter(label_path, cnt, max_per_clc) :
             cnt['empty']+=1
         else :
             clc = line.split(' ')[0]
-            clc = int(new_table[table[int(clc)]])
+            clc = str(new_table[table[int(clc)]])
             if cnt[clc] > max_per_clc :
                 return cnt, True
             cnt[clc] +=1

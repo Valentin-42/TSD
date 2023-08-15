@@ -204,6 +204,14 @@ if __name__ == "__main__":
     labnames = [args.source+"labels/"+f for f in os.listdir(args.source+"labels/") if f.endswith(".txt")]
     imnames  = [f.replace('txt', 'jpg').replace('labels','images') for f in labnames]
     
+    for f in os.listdir(args.source+"images/") :
+        if not f.endswith(".jpg") :
+            continue
+        f_p = args.source+"images/"+f
+        if not f_p in imnames :
+            imnames.remove(f_p)
+            labnames.remove(f_p.replace('jpg', 'txt').replace('images','labels'))
+
     print(f"{len(labnames)} , {len(imnames)}")
     
     if len(imnames) == 0:

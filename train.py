@@ -47,6 +47,9 @@ def start_training_scratch() :
     print(str(args))
     results = model.train(**args)
 
+
+
+
 def optimizer_tuning(path_to_weights, path_to_config) :
     model = YOLO(path_to_weights)
 
@@ -89,8 +92,6 @@ def optimizer_tuning(path_to_weights, path_to_config) :
             lr0 = lr0,
             lrf = lrf
         )
-
-
 
 def hpp_tuning(path_to_weights, path_to_config) :
 

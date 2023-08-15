@@ -7,6 +7,7 @@ import os
 import random
 import shutil
 import json
+import yaml
 
 def tiler(imnames, newpath, slice_size, ext):
 
@@ -97,7 +98,14 @@ def tiler(imnames, newpath, slice_size, ext):
 
 def filter(label_path, cnt, max_per_clc) : 
 
-    table_map = {'warning':0,"other":1,'information':2,'regulatory':3,'complementary':4}
+    with open('./configs/nano/data.yaml', 'r') as f:
+        table = yaml.safe_load(f)
+    table = table['names']
+    for k in table.keys() :
+        table[k] = table[k].split('-')[0]
+
+    new_table = {'warning':0,'other':1,'information':2,'regulatory':3,'complementary':4}
+
     # FILTER        
     with open(label_path, "r") as f : 
         lines = f.readlines()
@@ -107,7 +115,6 @@ def filter(label_path, cnt, max_per_clc) :
                 return cnt, True
         cnt['empty']+=1
         return cnt, False
-
         
     for line in lines :
         if line == "" or line == " " :
@@ -116,6 +123,7 @@ def filter(label_path, cnt, max_per_clc) :
             cnt['empty']+=1
         else :
             clc = line.split(' ')[0]
+            clc = new_table[table[clc]]
             if cnt[clc] > max_per_clc :
                 return cnt, True
             cnt[clc] +=1
@@ -129,6 +137,8 @@ def splitter(source, target, ext, ratio, max):
         return
     elif max > len(labnames) :
         print(" /!\ Dataset size asked superior to available images => taking max possible ")
+
+
 
     t_train_im = os.path.join(target, 'train/images')
     t_train_lab = os.path.join(target, 'train/labels')

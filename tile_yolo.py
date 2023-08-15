@@ -14,29 +14,33 @@ def tiler(imnames, newpath, slice_size, ext):
         print(f"{round(100*index/len(imnames))} %",end="\r")
         im = Image.open(imname)
         imr = np.array(im, dtype=np.uint8)
+        width, height = im.size
 
-        lbl = imname.replace(ext, '.json').replace('images', 'labels')
-        with open(lbl, 'r') as json_file:
-            data = json.load(json_file)
+        data = {'width':width, 'height':height, 'objects':[]}
+        lbl = imname.replace(ext, '.txt').replace('images', 'labels')
+        with open(lbl, 'r') as f:
+            lines = f.readlines()
+        for line in lines :
+            line.split(' ')
+            if len(line) > 0 :
+                data['objects'].append(line.split(' '))
 
         objects = data['objects']
         width = data['width']
         height = data['height']
-          
         boxes = []
         for obj in objects:
-            bbox=obj["bbox"]
-            x = bbox['xmin']
-            y = bbox['ymin']
-            bwidth = bbox['xmax'] - bbox['xmin']
-            bheight = bbox['ymax'] - bbox['ymin']
+            x = float(obj[1]) * width
+            y = float(obj[2]) * height
+            bwidth =float(obj[3]) * width
+            bheight = float(obj[4]) * height
 
-            x1 = x
-            y1 = y
-            x2 = x + bwidth
-            y2 = y + bheight
+            x1 = int(x)
+            y1 = int(y)
+            x2 = int(x + bwidth)
+            y2 = int(y + bheight)
 
-            boxes.append((obj['label'], Polygon([(x1, y1), (x2, y1), (x2, y2), (x1, y2)])))
+            boxes.append((obj[0], Polygon([(x1, y1), (x2, y1), (x2, y2), (x1, y2)])))
       
         counter = 0
         # create tiles and find intersection with bounding boxes for each tile
@@ -111,10 +115,10 @@ def filter(label_path, cnt, max_per_clc) :
                 return cnt, True
             cnt['empty']+=1
         else :
-            clc = line.split(" ")[0].split('\n')[0].split('-')[0]
-            if cnt[str(table_map[clc])] > max_per_clc :
+            clc = line.split(' ')[0]
+            if cnt[clc] > max_per_clc :
                 return cnt, True
-            cnt[str(table_map[clc])] +=1
+            cnt[clc] +=1
 
     return cnt, False
 
@@ -148,7 +152,7 @@ def splitter(source, target, ext, ratio, max):
             cnt_val, jump = filter(labels_path, cnt_val, max_val//6)
             if jump : 
                 continue
-            # shutil.copy(im_path    , t_val_im)
+            shutil.copy(im_path    , t_val_im)
             shutil.copy(labels_path, t_val_lab)
             cnt_val['total']+=1
 
@@ -156,7 +160,7 @@ def splitter(source, target, ext, ratio, max):
             cnt_train, jump = filter(labels_path, cnt_train, max_train//6)
             if jump :
                 continue
-            # shutil.copy(im_path    , t_train_im)
+            shutil.copy(im_path    , t_train_im)
             shutil.copy(labels_path, t_train_lab)
             cnt_train['total']+=1
 
@@ -173,12 +177,12 @@ if __name__ == "__main__":
     # Initialize parser
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("-source", default="./MTSD/extracted", help = "Source folder with images and labels needed to be tiled")
-    parser.add_argument("-target", default="./tiled/", help = "Target folder for a new sliced dataset")
+    parser.add_argument("-source", default="./datasets/default_MTSD/train/", help = "Source folder with images and labels needed to be tiled")
+    parser.add_argument("-target", default="./sliced/", help = "Target folder for a new sliced dataset")
     parser.add_argument("-ext", default=".jpg", help = "Image extension in a dataset. Default: .jpg")
     parser.add_argument("-size", type=int, default=640, help = "Size of a tile. Default: 512")
     parser.add_argument("-split", type=bool, default=True, help = "True : Split into dataset")
-    parser.add_argument("-max", type=int, default=5000, help = "Number of total images")
+    parser.add_argument("-max", type=int, default=5, help = "Number of total images")
     parser.add_argument("-ratio", type=float, default=0.8, help = "Train/val split ratio from max. Dafault: 0.8")
 
     args = parser.parse_args()

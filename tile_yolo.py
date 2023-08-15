@@ -194,7 +194,7 @@ if __name__ == "__main__":
     print(f"{len(labnames)} , {len(imnames)}")
     
     if len(imnames) == 0:
-        raise Exception("Source folder should contain some images")
+        raise Exception(f"Source folder should contain some images {args.source}")
     elif len(imnames) != len(labnames):
         print(args.source+"/labels/")
         print(args.source+"/images/")

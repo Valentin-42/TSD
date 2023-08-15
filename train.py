@@ -93,12 +93,12 @@ def optimizer_tuning(path_to_weights, path_to_config) :
             lrf = lrf
         )
 
-def hpp_tuning(path_to_weights, path_to_config) :
+def hpp_tuning(path_to_weights, path_to_config, epochs) :
 
     model = YOLO(path_to_weights)
 
     # Default params
-    epochs   = 50
+    epochs   = epochs
     imgsz    = 50
     save_period = 10
     data     = path_to_config
@@ -156,7 +156,8 @@ if __name__ == "__main__":
 
     parser.add_argument("-w", default="./configs/nano/yolov8n.pt", help = "path to .pt")
     parser.add_argument("-c", default="./configs/nano/data_4classes.yaml", help = "data file path")
+    parser.add_argument("-e", default=100, help = "nbs of epochs")
 
     args = parser.parse_args()
     # optimizer_tuning(args.w, args.c)
-    hpp_tuning(args.w, args.c)
+    hpp_tuning(args.w, args.c, args.e)

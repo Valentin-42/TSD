@@ -96,11 +96,9 @@ def tiler(imnames, newpath, slice_size, ext):
                     with open(slice_labels_path, "w+") as f :
                         f.write("")
 
-def filter(label_path, cnt, max_per_clc) : 
+def filter(label_path, cnt, max_per_clc, table) : 
 
-    with open('./configs/nano/data.yaml', 'r') as f:
-        table = yaml.safe_load(f)
-    table = table['names']
+
     for k in table.keys() :
         table[k] = table[k].split('-')[0]
 
@@ -152,13 +150,18 @@ def splitter(source, target, ext, ratio, max):
     cnt_train = {'total':0, 'empty':0, '0':0, '1':0, '2':0, '3':0, '4':0}
     cnt_val   = {'total':0, 'empty':0, '0':0, '1':0, '2':0, '3':0, '4':0}
     i = 0
+
+    with open('./configs/nano/data.yaml', 'r') as f:
+        table = yaml.safe_load(f)
+    table = table['names']
+
     print("Starting ... ")
     for name in labnames:
 
         im_path     = name.replace('.txt', '.jpg')                       
         labels_path = name
         if random.random() > ratio:
-            cnt_val, jump = filter(labels_path, cnt_val, max_val//6)
+            cnt_val, jump = filter(labels_path, cnt_val, max_val//6,table)
             if jump : 
                 continue
             shutil.copy(im_path    , t_val_im)
@@ -166,7 +169,7 @@ def splitter(source, target, ext, ratio, max):
             cnt_val['total']+=1
 
         else:
-            cnt_train, jump = filter(labels_path, cnt_train, max_train//6)
+            cnt_train, jump = filter(labels_path, cnt_train, max_train//6,table)
             if jump :
                 continue
             shutil.copy(im_path    , t_train_im)
@@ -175,6 +178,7 @@ def splitter(source, target, ext, ratio, max):
 
 
         i+=1
+        print(i,end="\r")
         if i == max :
             break
 
@@ -224,7 +228,11 @@ if __name__ == "__main__":
     imnames = [f for i,f in enumerate(imnames) if i<args.max]
     tiler(imnames, os.path.join(args.target,'cache'), args.size, args.ext)
     if args.split :
+        print(f"== Start Splitting ==")
         splitter(os.path.join(args.target,'cache'), args.target, args.ext, args.ratio, args.max)
 
     if not args.keep :
+        print(f"== Cleaning ==")
         shutil.rmtree(os.path.join(args.target,'cache'))
+    print(f"== Done ! ==")
+    

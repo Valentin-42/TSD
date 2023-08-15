@@ -105,7 +105,7 @@ def filter(label_path, cnt, max_per_clc) :
         table[k] = table[k].split('-')[0]
 
     new_table = {'warning':0,'other':1,'information':2,'regulatory':3,'complementary':4}
-
+    print(table)
     # FILTER        
     with open(label_path, "r") as f : 
         lines = f.readlines()
@@ -123,7 +123,7 @@ def filter(label_path, cnt, max_per_clc) :
             cnt['empty']+=1
         else :
             clc = line.split(' ')[0]
-            clc = new_table[table[clc]]
+            clc = int(new_table[table[int(clc)]])
             if cnt[clc] > max_per_clc :
                 return cnt, True
             cnt[clc] +=1

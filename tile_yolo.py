@@ -204,6 +204,7 @@ if __name__ == "__main__":
     labnames = [args.source+"labels/"+f for f in os.listdir(args.source+"labels/") if f.endswith(".txt")]
     imnames  = [f.replace('txt', 'jpg').replace('labels','images') for f in labnames]
     
+    print("== Control ==")
     for f in os.listdir(args.source+"images/") :
         if not f.endswith(".jpg") :
             continue

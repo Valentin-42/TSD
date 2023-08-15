@@ -158,4 +158,5 @@ if __name__ == "__main__":
     parser.add_argument("-c", default="./configs/nano/data_4classes.yaml", help = "data file path")
 
     args = parser.parse_args()
-    optimizer_tuning(args.w, args.c)
+    # optimizer_tuning(args.w, args.c)
+    hpp_tuning(args.w, args.c)

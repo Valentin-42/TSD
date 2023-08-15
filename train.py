@@ -54,8 +54,8 @@ def optimizer_tuning(path_to_weights, path_to_config) :
     model = YOLO(path_to_weights)
 
     # Default params
-    epochs   = 50
-    imgsz    = 50
+    epochs   = 100
+    imgsz    = 640
     save_period = 10
     data     = path_to_config
     device   = 0
@@ -99,7 +99,8 @@ def hpp_tuning(path_to_weights, path_to_config, epochs) :
 
     # Default params
     epochs   = epochs
-    imgsz    = 50
+    imgsz    = 640
+    patience = epochs
     save_period = 10
     data     = path_to_config
     device   = 0
@@ -120,6 +121,7 @@ def hpp_tuning(path_to_weights, path_to_config, epochs) :
         results = model.train(
             data = data,
             epochs = epochs,
+            patience = patience,
             imgsz = imgsz,
             save_period = save_period,
             device = device,

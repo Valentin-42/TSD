@@ -188,8 +188,8 @@ if __name__ == "__main__":
 
     args = parser.parse_args()
 
-    labnames = [args.source+"/labels/"+f for f in os.listdir(args.source+"/labels/") if f.endswith(".json")]
-    imnames  = [f.replace('json', 'jpg').replace('labels','images') for f in labnames]
+    labnames = [args.source+"/labels/"+f for f in os.listdir(args.source+"/labels/") if f.endswith(".txt")]
+    imnames  = [f.replace('txt', 'jpg').replace('labels','images') for f in labnames]
     
     print(f"{len(labnames)} , {len(imnames)}")
     

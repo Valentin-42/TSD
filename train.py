@@ -95,7 +95,6 @@ def optimizer_tuning(path_to_weights, path_to_config) :
 
 def hpp_tuning(path_to_weights, path_to_config, epochs) :
 
-    model = YOLO(path_to_weights)
 
     # Default params
     epochs   = epochs
@@ -112,6 +111,8 @@ def hpp_tuning(path_to_weights, path_to_config, epochs) :
     curve = [0.0, 0.35, 0.65, 1.0]
     i,j,k,l = 0,0,0,0
     for exp in range(256) : 
+        model = YOLO(path_to_weights)
+
         name = f"exp_{exp}_{i}_{j}_{k}_{l}"
         mosaic = curve[i] 
         mixup = curve[j]

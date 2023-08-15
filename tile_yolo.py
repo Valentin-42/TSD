@@ -78,7 +78,7 @@ def tiler(imnames, newpath, slice_size, ext):
                         slice_labels.append([box[0], new_x, new_y, new_width, new_height])
 
                     if not imsaved:
-                        sliced = imr[j:j+slice_size+1, i:i+slice_size]
+                        sliced = imr[j:j+slice_size, i:i+slice_size]
                         sliced_im = Image.fromarray(sliced)
                         filename = imname.split('/')[-1]
                         slice_path = newpath+"/"+filename.replace(ext, f'_{i}_{j}{ext}')                      
@@ -182,8 +182,9 @@ if __name__ == "__main__":
     parser.add_argument("-ext", default=".jpg", help = "Image extension in a dataset. Default: .jpg")
     parser.add_argument("-size", type=int, default=640, help = "Size of a tile. Default: 512")
     parser.add_argument("-split", type=bool, default=True, help = "True : Split into dataset")
-    parser.add_argument("-max", type=int, default=5, help = "Number of total images")
+    parser.add_argument("-max", type=int, default=10, help = "Number of total images")
     parser.add_argument("-ratio", type=float, default=0.8, help = "Train/val split ratio from max. Dafault: 0.8")
+    parser.add_argument("-keep", type=bool, default=False, help = "Keep cache folder")
 
     args = parser.parse_args()
 
@@ -215,3 +216,6 @@ if __name__ == "__main__":
     tiler(imnames, os.path.join(args.target,'cache'), args.size, args.ext)
     if args.split :
         splitter(os.path.join(args.target,'cache'), args.target, args.ext, args.ratio, args.max)
+
+    if not args.keep :
+        shutil.rmtree(os.path.join(args.target,'cache'))

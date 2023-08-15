@@ -133,21 +133,22 @@ def hpp_tuning(path_to_weights, path_to_config, epochs) :
             mosaic = mosaic,
             mixup = mixup,
             copy_paste = copy_paste,
-            scale = scale
+            scale = scale,
+            resume = False
         )
         i+= 1
-        j+= round(i/4)
-        k+= round(j/4)
-        l+= round(l/4)
-
         if i == 4 :
             i=0
+            j+=1
         elif j ==4:
             j=0
+            k+=1
         elif k==4:
             k=0
+            l+=1
         elif l==4 :
             l=0
+            break
 
 
 

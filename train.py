@@ -109,7 +109,7 @@ def hpp_tuning(path_to_weights, path_to_config) :
     optimizer = 'SGD'
 
     curve = [0.0, 0.35, 0.65, 1.0]
-    i,j,k,l = 0
+    i,j,k,l = 0,0,0,0
     for exp in range(4**4) : 
         name = f"exp_{exp}"
         mosaic = curve[i] 

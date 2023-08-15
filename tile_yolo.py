@@ -105,7 +105,6 @@ def filter(label_path, cnt, max_per_clc) :
         table[k] = table[k].split('-')[0]
 
     new_table = {'warning':0,'other':1,'information':2,'regulatory':3,'complementary':4}
-    print(table)
     # FILTER        
     with open(label_path, "r") as f : 
         lines = f.readlines()

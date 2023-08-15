@@ -24,7 +24,7 @@ def correct(label_fld_path, o_path) :
             for line in lines :
                 for line in lines :
                     l = line.split(' ')
-                    new_clc = str(new_table[table[int(l[0])]])
+                    new_clc = str(new_table[table[int(l[0])].split('-')[0]])
                     l = f"{new_clc} {l[1]} {l[2]} {l[3]} {l[4]}\n"
                     f.write(l)
 

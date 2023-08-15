@@ -1,7 +1,6 @@
 path : /mnt/gpu_storage/traffic-sign-detection/TSD/datasets/
 train: sliced/train/images/
 val  : sliced/val/images/
-# test : default_MTSD/test/images/
 
 # class names
 names: 

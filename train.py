@@ -138,16 +138,16 @@ def hpp_tuning(path_to_weights, path_to_config, epochs) :
             resume = False
         )
         i+= 1
-        if i == 4 :
+        if i == 3 :
             i=0
             j+=1
-        elif j ==4:
+        elif j ==3:
             j=0
             k+=1
-        elif k==4:
+        elif k==3:
             k=0
             l+=1
-        elif l==4 :
+        elif l==3 :
             l=0
             break
 

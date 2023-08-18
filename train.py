@@ -48,19 +48,17 @@ def start_training_scratch() :
     results = model.train(**args)
 
 
-
-
 def optimizer_tuning(path_to_weights, path_to_config) :
     model = YOLO(path_to_weights)
 
     # Default params
-    epochs   = 100
+    epochs   = 200
     imgsz    = 640
     save_period = 10
     data     = path_to_config
     device   = 0
     exist_ok = True
-    batch    = 128
+    batch    = 256
     project_name = "Optimizer_Tuning" 
     # 
     experiments = {
@@ -163,5 +161,5 @@ if __name__ == "__main__":
     parser.add_argument("-e", default=100, help = "nbs of epochs")
 
     args = parser.parse_args()
-    # optimizer_tuning(args.w, args.c)
-    hpp_tuning(args.w, args.c, args.e)
+    optimizer_tuning(args.w, args.c)
+    # hpp_tuning(args.w, args.c, args.e)

@@ -21,8 +21,7 @@ def get_all_models(fld_path) :
     # print(res)
     return res
 
-def val(models) :
-    df = pd.DataFrame()
+def val(models,save_fld) :
     d = {
             "mAP@50-95": [],
             "mAP@50": [],
@@ -45,9 +44,9 @@ def val(models) :
         d["mP"].append(metrics.box.mp)
         d["mR"].append(metrics.box.mr)
 
-        # Print the dataframe
-        print(df)
-        break
+    df = pd.DataFrame(data=d)
+    with open(os.path.join(save_fld,'validation.txt'), 'w+') as f:
+        f.write(df.to_latex())
 
 if __name__ == "__main__":
     args = parse_args()

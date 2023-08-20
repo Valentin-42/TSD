@@ -30,6 +30,18 @@ def val(models) :
         metrics = model.val()  # no arguments needed, dataset and settings remembered
         print(metrics)
 
+        
+        # Create a pandas dataframe
+        df = pd.DataFrame({
+            "map50-95": metrics.box.map,
+            "map50": metrics.box.map50,
+            "map75": metrics.box.map75,
+            "maps": metrics.box.maps,
+        })
+
+        # Print the dataframe
+        print(df)
+
 
 if __name__ == "__main__":
     args = parse_args()

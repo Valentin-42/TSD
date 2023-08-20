@@ -51,4 +51,4 @@ def val(models,save_fld) :
 if __name__ == "__main__":
     args = parse_args()
     models = get_all_models(args.fld)
-    val(models)
+    val(models,args.save_fld)

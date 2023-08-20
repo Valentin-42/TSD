@@ -58,7 +58,7 @@ def optimizer_tuning(path_to_weights, path_to_config) :
     data     = path_to_config
     device   = 0
     exist_ok = True
-    batch    = 256
+    batch    = 128
     project_name = "Optimizer_Tuning" 
     # 
     experiments = {

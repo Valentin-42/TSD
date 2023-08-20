@@ -29,7 +29,7 @@ def val(models) :
         # Validate the model
         metrics = model.val()  # no arguments needed, dataset and settings remembered
         print(metrics.box.map)
-        
+
         # Convert the list to an array
         maps = metrics.box.maps.tolist()
 
@@ -38,7 +38,6 @@ def val(models) :
             "map50-95": metrics.box.map,
             "map50": metrics.box.map50,
             "map75": metrics.box.map75,
-            "maps": maps,
         })
 
 

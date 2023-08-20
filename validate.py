@@ -22,6 +22,15 @@ def get_all_models(fld_path) :
     return res
 
 def val(models) :
+    df = pd.DataFrame()
+    d = {
+            "mAP@50-95": [],
+            "mAP@50": [],
+            "mAP@75": [],
+            "mP": [],
+            "mR": []
+        }
+    
     for exp in models.keys() :  
         # Load a model
         model = YOLO(models[exp]['weights'])
@@ -30,14 +39,11 @@ def val(models) :
         metrics = model.val()  # no arguments needed, dataset and settings remembered
 
         # Create a pandas dataframe
-        df = pd.DataFrame({
-            "mAP@50-95": [metrics.box.map],
-            "mAP@50": [metrics.box.map50],
-            "mAP@75": [metrics.box.map75],
-            "mP": [metrics.box.map75],
-            "mR": [metrics.box.map75],
-        })
-
+        d["mAP@50-95"].append(metrics.box.map)
+        d["mAP@50"].append(metrics.box.map50)
+        d["mAP@75"].append(metrics.box.map75)
+        d["mP"].append(metrics.box.mp)
+        d["mR"].append(metrics.box.mr)
 
         # Print the dataframe
         print(df)

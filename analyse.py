@@ -124,3 +124,4 @@ if __name__ == '__main__':
         df_images.plot(x='Height', y='Width', kind='scatter', title='Images Width vs Height')  
         plt.show()
 
+    

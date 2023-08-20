@@ -41,7 +41,7 @@ def val(models) :
 
         # Print the dataframe
         print(df)
-
+        break
 
 if __name__ == "__main__":
     args = parse_args()

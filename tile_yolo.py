@@ -195,7 +195,7 @@ if __name__ == "__main__":
     parser.add_argument("-ext", default=".jpg", help = "Image extension in a dataset. Default: .jpg")
     parser.add_argument("-size", type=int, default=640, help = "Size of a tile. Default: 512")
     parser.add_argument("-split", type=bool, default=True, help = "True : Split into dataset")
-    parser.add_argument("-max", type=int, default=5000, help = "Number of total images")
+    parser.add_argument("-max", type=int, default=30000, help = "Number of total images")
     parser.add_argument("-ratio", type=float, default=0.8, help = "Train/val split ratio from max. Dafault: 0.8")
     parser.add_argument("-keep", type=bool, default=False, help = "Keep cache folder")
 

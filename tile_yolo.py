@@ -64,8 +64,10 @@ def tiler(imnames, newpath, slice_size, ext):
                         new_box = inter.envelope 
                         
                         # get coordinates of polygon vertices
-                        x, y = new_box.exterior.coords.xy
-                        
+                        try :
+                            x, y = new_box.exterior.coords.xy
+                        except :
+                            continue
                         # get bounding box width and height normalized to slice size
                         new_width =  (max(x) - min(x)) / slice_size
                         new_height = (max(y) - min(y)) / slice_size
@@ -193,7 +195,7 @@ if __name__ == "__main__":
     parser.add_argument("-source", default="./datasets/default_MTSD/train/", help = "Source folder with images and labels needed to be tiled")
     parser.add_argument("-target", default="./sliced/", help = "Target folder for a new sliced dataset")
     parser.add_argument("-ext", default=".jpg", help = "Image extension in a dataset. Default: .jpg")
-    parser.add_argument("-size", type=int, default=640, help = "Size of a tile. Default: 512")
+    parser.add_argument("-size", type=int, default=640, help = "Size of a tile. Default: 640")
     parser.add_argument("-split", type=bool, default=True, help = "True : Split into dataset")
     parser.add_argument("-max", type=int, default=30000, help = "Number of total images")
     parser.add_argument("-ratio", type=float, default=0.8, help = "Train/val split ratio from max. Dafault: 0.8")

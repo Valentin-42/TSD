@@ -28,7 +28,7 @@ def val(models) :
 
         # Validate the model
         metrics = model.val()  # no arguments needed, dataset and settings remembered
-        print(metrics)
+        print(metrics.box.map)
 
         
         # Create a pandas dataframe

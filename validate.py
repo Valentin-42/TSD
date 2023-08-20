@@ -18,7 +18,7 @@ def get_all_models(fld_path) :
             if ckp == 'best.pt' :
                 res[exp] = {}
                 res[exp]['weights'] = os.path.join(fld_path,exp,'weights',ckp).replace('\\','/')
-    print(res)
+    # print(res)
     return res
 
 def val(models) :
@@ -46,4 +46,4 @@ def val(models) :
 if __name__ == "__main__":
     args = parse_args()
     models = get_all_models(args.fld)
-    # val(models)
+    val(models)

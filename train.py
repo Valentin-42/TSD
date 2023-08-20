@@ -86,6 +86,7 @@ def optimizer_tuning(path_to_weights, path_to_config) :
             batch = batch,
             project = project_name,
             name = name,
+            patience = epochs,
             optimizer = optimizer,
             lr0 = lr0,
             lrf = lrf

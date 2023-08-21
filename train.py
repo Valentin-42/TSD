@@ -172,7 +172,7 @@ def final_training(path_to_weights, path_to_config) :
     mixup  = 0.4
     copy_paste = 0.7
     scale = 0.7
-    resume = False
+    resume = True
     # 
 
     results = model.train(
@@ -193,7 +193,7 @@ def final_training(path_to_weights, path_to_config) :
         mixup = mixup,
         copy_paste = copy_paste,
         scale = scale,
-        resume = False
+        resume = resume
     )
 
 

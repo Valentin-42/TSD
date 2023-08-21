@@ -151,7 +151,50 @@ def hpp_tuning(path_to_weights, path_to_config, epochs) :
             break
 
 
+def final_training(path_to_weights, path_to_config) :
 
+    model = YOLO(path_to_weights)
+
+    # Default params
+    epochs   = 500
+    imgsz    = 640
+    save_period = 100
+    data     = path_to_config
+    device   = 0
+    exist_ok = True
+    batch    = 128
+    project_name = "Final_training"
+    name = 'exp'
+    optimizer = 'SGD', 
+    lr0 = 0.01,
+    lrf = 0.01,
+    mosaic = 0,
+    mixup  = 0.4,
+    copy_paste = 0.7,
+    scale = 0.7,
+    resume = False
+    # 
+
+    results = model.train(
+        data = data,
+        epochs = epochs,
+        imgsz = imgsz,
+        save_period = save_period,
+        device = device,
+        exist_ok = exist_ok,
+        batch = batch,
+        project = project_name,
+        name = name,
+        patience = epochs,
+        optimizer = optimizer,
+        lr0 = lr0,
+        lrf = lrf,
+        mosaic = mosaic,
+        mixup = mixup,
+        copy_paste = copy_paste,
+        scale = scale,
+        resume = False
+    )
 
 
 if __name__ == "__main__":
@@ -162,5 +205,6 @@ if __name__ == "__main__":
     parser.add_argument("-e", default=100, help = "nbs of epochs")
 
     args = parser.parse_args()
-    optimizer_tuning(args.w, args.c)
+    # optimizer_tuning(args.w, args.c)
     # hpp_tuning(args.w, args.c, args.e)
+    final_training(args.w, args.c)

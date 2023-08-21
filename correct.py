@@ -36,7 +36,7 @@ if __name__ == "__main__":
     parser.add_argument("-source", default="./datasets/default_MTSD/train/", help = "Source folder with images and labels needed to be tiled")
     parser.add_argument("-target", default="./sliced/", help = "Target folder for a new sliced dataset")
     args = parser.parse_args()
-
+    print("GO")
     if not os.path.exists(args.target):
         os.makedirs(args.target)
     correct(args.source, args. target)

@@ -164,7 +164,7 @@ def final_training(path_to_weights, path_to_config,epochs) :
     exist_ok = True
     batch    = 128
     project_name = "Final_training"
-    name = 'exp'
+    name = 'exp2'
     optimizer = 'SGD'
     lr0 =float(0.01)
     lrf =float(0.01)
@@ -172,7 +172,7 @@ def final_training(path_to_weights, path_to_config,epochs) :
     mixup  = 0.4
     copy_paste = 0.7
     scale = 0.7
-    resume = True
+    resume = False
     # 
 
     results = model.train(

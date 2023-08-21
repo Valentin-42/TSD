@@ -1,0 +1,11 @@
+path : /mnt/gpu_storage/traffic-sign-detection/TSD/datasets/
+train: sliced_30k/train/images/
+val  : sliced_30k/val/images/
+
+# class names
+names: 
+  0 : warning
+  1 : other
+  2 : information
+  3 : regulatory
+  4 : complementary

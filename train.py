@@ -156,7 +156,7 @@ def final_training(path_to_weights, path_to_config,epochs) :
     model = YOLO(path_to_weights)
 
     # Default params
-    epochs   = epochs
+    epochs   = int(epochs)
     imgsz    = 640
     save_period = 100
     data     = path_to_config

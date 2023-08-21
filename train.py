@@ -164,7 +164,7 @@ def final_training(path_to_weights, path_to_config,epochs) :
     exist_ok = True
     batch    = 128
     project_name = "Final_training"
-    name = 'exp'
+    name = 'exp500-1000'
     optimizer = 'SGD'
     lr0 =float(0.01)
     lrf =float(0.01)

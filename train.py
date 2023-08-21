@@ -151,7 +151,7 @@ def hpp_tuning(path_to_weights, path_to_config, epochs) :
             break
 
 
-def final_training(path_to_weights, path_to_config) :
+def final_training(path_to_weights, path_to_config,epochs) :
 
     model = YOLO(path_to_weights)
 
@@ -207,4 +207,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
     # optimizer_tuning(args.w, args.c)
     # hpp_tuning(args.w, args.c, args.e)
-    final_training(args.w, args.c)
+    final_training(args.w, args.c,args.e)

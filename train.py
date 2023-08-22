@@ -172,7 +172,7 @@ def final_training(path_to_weights, path_to_config,epochs) :
     mixup  = 0.35
     copy_paste = 0.65
     scale = 0.65
-    resume = False
+    resume = True
     # 
 
     results = model.train(

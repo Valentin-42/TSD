@@ -24,7 +24,7 @@ for col in df.columns[1:]:
 # Define a function to compute custom fitness
 def custom_fitness(row):
     # Define the weights for each metric
-    weights = [0.25, 0.25, 0.15, 0.15, 0.2]
+    weights = [0.25, 0.23, 0.15, 0.15, 0.22]
 
     # Extract the metric values from the row and convert them to float
     metrics = row[['mAP@50-95', 'mAP@50', 'mAP@75', 'mP', 'mR']].astype(float).values

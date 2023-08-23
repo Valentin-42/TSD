@@ -1,0 +1,11 @@
+path : /mnt/gpu_storage/traffic-sign-detection/TSD/datasets/
+train: default_MTSD/train/images/
+val  : default_MTSD/val/images/
+
+# class names
+names: 
+  0 : warning
+  1 : other
+  2 : information
+  3 : regulatory
+  4 : complementary

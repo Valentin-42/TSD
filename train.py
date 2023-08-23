@@ -201,7 +201,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
 
     parser.add_argument("-w", default="./configs/nano/yolov8n.pt", help = "path to .pt")
-    parser.add_argument("-c", default="./configs/nano/data_4classes_30k.yaml", help = "data file path")
+    parser.add_argument("-c", default="./configs/nano/data_4classes_original.yaml", help = "data file path")
     parser.add_argument("-e", default=100, help = "nbs of epochs")
 
     args = parser.parse_args()

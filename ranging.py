@@ -24,20 +24,20 @@ def ranging2(model_path, folder_path) :
             confidence_scores.append(0)
         else :
             confidence_scores.append(sum(pred)/len(pred))
+        print(i, end="\r")
 
     image_indices = np.arange(len(confidence_scores))
-    x_smooth = np.linspace(image_indices.min(), image_indices.max(), 300)
-    spl = make_interp_spline(image_indices, confidence_scores, k=100)
-    y_smooth = spl(x_smooth)
-    plt.plot(x_smooth, y_smooth, color='r', linestyle='--', linewidth=3, label='Smooth')
-
-    # Plot AP versus distance
+    cumulative = [(x[i] + x[i-1]) for i,x in enumerate(confidence_scores) if i >= 1]
+    # Plot the smooth curve
     plt.plot(image_indices, confidence_scores, marker='o')
+    plt.plot(image_indices, cumulative, marker='-')
+    # Plot AP versus distance
     plt.xlabel('Distance (m)')
     plt.ylabel('Confidence Score')
     plt.title('Confidence versus Distance (YOLO)')
     plt.grid()
     plt.show()
+
 
 
 def ranging(model_path, folder_path) :

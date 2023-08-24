@@ -173,7 +173,7 @@ def final_training(path_to_weights, path_to_config,epochs) :
     mixup  = 0.35
     copy_paste = 0.65
     scale = 0.65
-    resume = True
+    resume = False
     # 
     print("GO")
     results = model.train(
@@ -183,10 +183,10 @@ def final_training(path_to_weights, path_to_config,epochs) :
         save_period = save_period,
         device = device,
         exist_ok = exist_ok,
-        batch = batch,
-        project = project_name,
-        name = name,
-        cache = cache,
+        batch = 64,
+        project = "Final",
+        name = "no_tile",
+        cache = True,
         patience = epochs,
         optimizer = optimizer,
         lr0 = lr0,

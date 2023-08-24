@@ -162,6 +162,7 @@ def final_training(path_to_weights, path_to_config,epochs) :
     data     = path_to_config
     device   = 0
     exist_ok = True
+    cache = False
     batch    = 64
     project_name = "Final_training"
     name = 'no_tile'
@@ -177,6 +178,7 @@ def final_training(path_to_weights, path_to_config,epochs) :
 
     results = model.train(
         data = data,
+        cache = cache,
         epochs = epochs,
         imgsz = imgsz,
         save_period = save_period,

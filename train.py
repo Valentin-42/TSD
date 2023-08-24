@@ -162,7 +162,7 @@ def final_training(path_to_weights, path_to_config,epochs) :
     data     = path_to_config
     device   = 0
     exist_ok = True
-    cache = "ram"
+    cache = True
     batch    = 64
     project_name = "Final_training"
     name = 'no_tile'
@@ -183,10 +183,10 @@ def final_training(path_to_weights, path_to_config,epochs) :
         save_period = save_period,
         device = device,
         exist_ok = exist_ok,
-        batch = 64,
-        project = "Final",
-        name = "no_tile",
-        cache = True,
+        batch = batch,
+        project = project_name,
+        name = name,
+        cache = cache,
         patience = epochs,
         optimizer = optimizer,
         lr0 = lr0,

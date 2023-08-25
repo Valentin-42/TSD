@@ -1,4 +1,5 @@
 path : /mnt/gpu_storage/traffic-sign-detection/TSD/datasets/
+train  : test_sets/resolution/images/
 val  : test_sets/resolution/images/
 
 # class names
